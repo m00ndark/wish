@@ -151,18 +151,25 @@ include_once "common.php";
 															<select name="existing_user" style="width: 150px" onclick="clearNewUser();">
 																<option value="-1"></option>
 <?php
-$connection = dbConnect();
-$result = mysql_query("SELECT user_id, user_name FROM users ORDER BY user_name ASC");
-while ($row = mysql_fetch_assoc($result))
+try
 {
-	echo "<option value=\"" . $row["user_id"] . "\"";
-	if (!$loginSuccess && $row["user_id"] == $_POST["existing_user"])
+	$connection = dbConnect();
+	$result = dbExecute($connection, 'SELECT user_id, user_name FROM users ORDER BY user_name ASC');
+	while ($row = dbFetch($result))
 	{
-		echo " selected=\"true\"";
+		echo "<option value=\"" . $row->user_id . "\"";
+		if (!$loginSuccess && $row->user_id == $_POST->existing_user)
+		{
+			echo " selected=\"true\"";
+		}
+		echo ">" . $row->user_name . "</option>\n";
 	}
-	echo ">" . $row["user_name"] . "</option>\n";
+	dbDisconnect($connection);
 }
-dbDisconnect($connection);
+catch (PDOException $ex)
+{
+	die('Could not retrieve user names from database: ' . $ex->getMessage());
+}
 ?>
 															</select>
 														</td>
