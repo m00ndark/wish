@@ -130,7 +130,7 @@ if ($postbackPage == 'pwd.php')
 		$userId = $_POST['existing_user'];
 		// create recovery code
 		$recoveryCode = substr(md5(uniqid(rand(), true)), 0, 32);
-		$expireTime = mktime(date('H'), date('i') + 10, date('s'), date('n'), date('j'), date('Y'), 0); // now, +10 min
+		$expireTime = mktime(date('H'), date('i') + 10, date('s'), date('n'), date('j'), date('Y')); // now + 10 min
 		try
 		{
 			dbExecute($connection, 'UPDATE users SET recovery_code = :code, recovery_valid_until = :validUntil WHERE user_id = :userId',
@@ -143,7 +143,7 @@ if ($postbackPage == 'pwd.php')
 		// retrieve email from database
 		try
 		{
-			$result = dbExecute($connection, 'SELECT user_id, email FROM users WHERE user_id = ' . $userId);
+			$result = dbExecute($connection, 'SELECT user_id, email FROM users WHERE user_id = :userId', [':userId' => $userId]);
 			$row = dbFetch($result);
 		}
 		catch (PDOException $ex)
@@ -164,7 +164,7 @@ if ($postbackPage == 'pwd.php')
 		// ***** ACTION : edit
 		$userId = $_POST['user'];
 		$password = $_POST['password'];
-		$yesterday = mktime(date('H'), date('i'), date('s'), date('n'), date('j') - 1, date('Y'), 0); // now - 1 day
+		$yesterday = mktime(date('H'), date('i'), date('s'), date('n'), date('j') - 1, date('Y')); // now - 1 day
 		// update password in database
 		try
 		{
@@ -203,7 +203,7 @@ elseif ($postbackPage == 'home.php')
 		if ($_POST['action'] == 'lock')
 		{
 			// ***** ACTION : lock wish list
-			if (!userOwnsWishList($_SESSION['user_id'], $listId))
+			if (!userOwnsWishList($connection, $_SESSION['user_id'], $listId))
 			{
 				die('You can not lock someone else\'s wish list!');
 			}
@@ -221,7 +221,7 @@ elseif ($postbackPage == 'home.php')
 		elseif ($_POST['action'] == 'edit')
 		{
 			// ***** ACTION : edit wish list
-			if (!userOwnsWishList($_SESSION['user_id'], $listId))
+			if (!userOwnsWishList($connection, $_SESSION['user_id'], $listId))
 			{
 				die('You can not edit someone else\'s wish list!');
 			}
@@ -250,7 +250,7 @@ elseif ($postbackPage == 'home.php')
 		elseif ($_POST['action'] == 'delete')
 		{
 			// ***** ACTION : delete wish list
-			if (!userOwnsWishList($_SESSION['user_id'], $listId))
+			if (!userOwnsWishList($connection, $_SESSION['user_id'], $listId))
 			{
 				die('You can not delete someone else\'s wish list!');
 			}
@@ -319,7 +319,7 @@ elseif ($postbackPage == 'list.php')
 		if ($_POST['action'] == 'reserve')
 		{
 			// ***** ACTION : reserve wish
-			if (userOwnsWish($userId, $wishId) && !wishBelongsToChildList($wishId))
+			if (userOwnsWish($connection, $userId, $wishId) && !wishBelongsToChildList($wishId))
 			{
 				die('You can not reserve your own wish!');
 			}
@@ -353,7 +353,7 @@ elseif ($postbackPage == 'list.php')
 		elseif ($_POST['action'] == 'edit')
 		{
 			// ***** ACTION : edit wish
-			if (!userOwnsWish($userId, $wishId))
+			if (!userOwnsWish($connection, $userId, $wishId))
 			{
 				die('You can not edit someone else\'s wish!');
 			}
@@ -426,7 +426,7 @@ elseif ($postbackPage == 'list.php')
 		elseif ($_POST['action'] == 'delete')
 		{
 			// ***** ACTION : delete wish
-			if (!userOwnsWish($userId, $wishId))
+			if (!userOwnsWish($connection, $userId, $wishId))
 			{
 				die('You can not delete someone else\'s wish!');
 			}
@@ -486,7 +486,7 @@ elseif ($postbackPage == 'list.php')
 		elseif ($_POST['action'] == 'add')
 		{
 			// ***** ACTION : add wish
-			if (!userOwnsWishList($userId, $listId))
+			if (!userOwnsWishList($connection, $userId, $listId))
 			{
 				die('You can not add a wish to someone else\'s wish list!');
 			}
@@ -497,7 +497,7 @@ elseif ($postbackPage == 'list.php')
 				$result = dbExecute($connection, 'SELECT reservation_key FROM wishes');
 				while ($row = dbFetch($result))
 				{
-					array_push($keys, decrypt($row['reservation_key']));
+					array_push($keys, decrypt($row->reservation_key));
 				}
 			}
 			catch (PDOException $ex)

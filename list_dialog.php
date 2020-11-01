@@ -2,37 +2,43 @@
 header('Content-Type: text/html; charset=utf-8');
 session_start();
 // verify that user is logged in
-if (!isset($_SESSION["user_id"]))
+if (!isset($_SESSION['user_id']))
 {
-	include "auth_failed.php";
+	include 'auth_failed.php';
 }
 
 // include common functions
-include_once "common.php";
+include_once 'common.php';
 
 // handle input
-$action = $_GET["action"];
-$actionIsEdit = ($action == "edit");
-$actionIsLock = ($action == "lock");
+$action = $_GET['action'];
+$actionIsEdit = ($action == 'edit');
+$actionIsLock = ($action == 'lock');
 if ($actionIsEdit || $actionIsLock)
 {
-	$listId = $_GET["listId"];
+	$listId = $_GET['listId'];
 }
 if ($actionIsEdit)
 {
 	$connection = dbConnect();
-	$result = mysql_query("SELECT wishlist_id, title, user_id, shared_with_user_id, is_child_list, child_name FROM wishlists WHERE wishlist_id = " . $listId);
-	if (!$result)
+	try
 	{
-		die("Could not retrieve wish list information from database: " . mysql_error());
+		$result = dbExecute($connection,
+			'SELECT wishlist_id, title, user_id, shared_with_user_id, is_child_list, child_name FROM wishlists WHERE wishlist_id = :wishlistId',
+			[':wishlistId' => $listId]);
+
+		$row = dbFetch($result);
+		$title = $row->title;
+		$userId = $row->user_id;
+		$sharedWithUserId = $row->shared_with_user_id;
+		$isChildList = $row->is_child_list;
+		$childName = $row->child_name;
 	}
-	$row = mysql_fetch_row($result);
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve wish list information from database: ' . $ex->getMessage());
+	}
 	dbDisconnect($connection);
-	$title = $row[1];
-	$userId = $row[2];
-	$sharedWithUserId = $row[3];
-	$isChildList = $row[4];
-	$childName = $row[5];
 }
 ?>
 <form name="list_dialog" method="post" action="home.php">
@@ -45,15 +51,15 @@ if ($actionIsEdit)
 <?php
 if ($actionIsEdit)
 {
-	echo "Ändra önskelista";
+	echo 'Ändra önskelista';
 }
 elseif ($actionIsLock)
 {
-	echo "Lås önskelista";
+	echo 'Lås önskelista';
 }
 else
 {
-	echo "Ny önskelista";
+	echo 'Ny önskelista';
 }
 ?>
 					</h2>
@@ -110,27 +116,35 @@ else
 <?php
 if ($sharedWithUserId > -1)
 {
-	echo " checked";
+	echo ' checked';
 }
-if ($actionIsEdit && $userId != $_SESSION["user_id"])
+if ($actionIsEdit && $userId != $_SESSION['user_id'])
 {
-	echo " disabled";
+	echo ' disabled';
 }
 ?>
 >&nbsp;Gemensam&nbsp;lista&nbsp;med:&nbsp;
-								<select name="shared_with_user_id" style="width: 150px"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION["user_id"]) { echo " disabled"; } ?>>
+								<select name="shared_with_user_id" style="width: 150px"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION['user_id']) { echo ' disabled'; } ?>>
 									<option value="-1"></option>
 <?php
 $connection = dbConnect();
-$result = mysql_query("SELECT user_id, user_name FROM users WHERE user_id != " . $_SESSION["user_id"] . " ORDER BY user_name ASC");
-while ($row = mysql_fetch_assoc($result))
+try
 {
-	echo "<option value=\"" . $row["user_id"] . "\"";
-	if ($actionIsEdit && ($row["user_id"] == $sharedWithUserId || $row["user_id"] == $userId))
+	$result = dbExecute($connection, 'SELECT user_id, user_name FROM users WHERE user_id != :userId ORDER BY user_name ASC',
+		[':userId' => $_SESSION['user_id']]);
+	while ($row = dbFetch($result))
 	{
-		echo " selected=\"true\"";
+		echo '<option value="' . $row->user_id . '"';
+		if ($actionIsEdit && ($row->user_id == $sharedWithUserId || $row->user_id == $userId))
+		{
+			echo ' selected="true"';
+		}
+		echo '>' . $row->user_name . "</option>\n";
 	}
-	echo ">" . $row["user_name"] . "</option>\n";
+}
+catch (PDOException $ex)
+{
+	die('Could not retrieve wish list information from database: ' . $ex->getMessage());
 }
 dbDisconnect($connection);
 ?>
@@ -149,11 +163,11 @@ dbDisconnect($connection);
 <?php
 if ($isChildList == 1)
 {
-	echo " checked";
+	echo ' checked';
 }
 ?>
 >&nbsp;Barnönskelista&nbsp;tillhörande:&nbsp;
-								<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>" style="width: 150px"<?php if ($isChildList == 0) { echo " disabled"; } ?>>
+								<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>" style="width: 150px"<?php if ($isChildList == 0) { echo ' disabled'; } ?>>
 							</td>
 <?php
 }
@@ -170,15 +184,15 @@ if ($isChildList == 1)
 <?php
 if ($actionIsEdit)
 {
-	echo "Ändra</a>";
+	echo 'Ändra</a>';
 }
 elseif ($actionIsLock)
 {
-	echo "Lås</a>";
+	echo 'Lås</a>';
 }
 else
 {
-	echo "Lägg&nbsp;till</a>";
+	echo 'Lägg&nbsp;till</a>';
 }
 ?>
 &nbsp;|&nbsp;<a href="javascript:cancelDialog()">Avbryt</a>

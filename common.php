@@ -4,6 +4,7 @@
 define('SALT_LENGTH', 16);
 
 // define encryption key
+define('ENCRYPTION_CIPHER', 'aes-128-ctr');
 define('ENCRYPTION_KEY', 'my-wish-is-your-wish');
 
 
@@ -33,7 +34,7 @@ function dbConnect()
 	}
 }
 
-function dbDisconnect($connection)
+function dbDisconnect(&$connection)
 {
 	$connection = null;
 }
@@ -90,7 +91,7 @@ function userOwnsWish($connection, $userId, $wishId)
 	try
 	{
 		$result = dbExecute($connection, 'SELECT user_id, shared_with_user_id FROM wishes INNER JOIN wishlists'
-			. ' ON wishes.wishlist_id = wishlists.wishlist_id WHERE wish_id = :wishId', array(':wishId' => $wishId));
+			. ' ON wishes.wishlist_id = wishlists.wishlist_id WHERE wish_id = :wishId', [':wishId' => $wishId]);
 
 		$row = dbFetch($result);
 		return ($row->user_id == $userId || $row->shared_with_user_id == $userId);
@@ -137,32 +138,23 @@ function wash($str)
 	return str_replace(array('"'), array('&quot;'), $str);
 }
 
-function encrypt($decrypted_data)
+function encrypt($decryptedData)
 {
-	$salt = substr(md5(uniqid(rand(), true)), 0, SALT_LENGTH);
-	$decrypted_data = $decrypted_data . $salt;
-	$td = mcrypt_module_open('cast-256', '', 'ecb', '');
-	$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
-	mcrypt_generic_init($td, ENCRYPTION_KEY, $iv);
-	$encrypted_data = mcrypt_generic($td, $decrypted_data);
-	mcrypt_generic_deinit($td);
-	mcrypt_module_close($td);
-	$encoded_64 = base64_encode($encrypted_data);
+	$ivLength = openssl_cipher_iv_length(ENCRYPTION_CIPHER);
+	$iv = openssl_random_pseudo_bytes($ivLength); // initialization vector
+	$encryptedData = openssl_encrypt($decryptedData, ENCRYPTION_CIPHER, ENCRYPTION_KEY, $options=0, $iv);
+	$encryptedData = $iv . $encryptedData;
+	$encoded_64 = base64_encode($encryptedData);
 	return $encoded_64;
 }
 
-function decrypt($encrypted_data)
+function decrypt($encryptedData)
 {
-	$decoded_64 = base64_decode($encrypted_data);
-	$td = mcrypt_module_open('cast-256', '', 'ecb', '');
-	$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
-	mcrypt_generic_init($td, ENCRYPTION_KEY, $iv);
-	$decrypted_data = mdecrypt_generic($td, $decoded_64);
-	mcrypt_generic_deinit($td);
-	mcrypt_module_close($td);
-	$decrypted_data = str_replace('\0', '', $decrypted_data);
-	$decrypted_data = substr($decrypted_data, 0, strlen($decrypted_data) - SALT_LENGTH);
-	return $decrypted_data;
+	$decoded_64 = base64_decode($encryptedData);
+	$ivLength = openssl_cipher_iv_length(ENCRYPTION_CIPHER);
+	$iv = substr($decoded_64, 0, $ivLength); // initialization vector
+	$decryptedData = openssl_decrypt(substr($decoded_64, $ivLength), ENCRYPTION_CIPHER, ENCRYPTION_KEY, $options=0, $iv);
+	return $decryptedData;
 }
 
 function recursiveArraySearch($haystack, $needle, $index = null)

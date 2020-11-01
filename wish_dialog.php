@@ -2,70 +2,85 @@
 header('Content-Type: text/html; charset=utf-8');
 session_start();
 // verify that user is logged in
-if (!isset($_SESSION["user_id"]))
+if (!isset($_SESSION['user_id']))
 {
-	include "auth_failed.php";
+	include 'auth_failed.php';
 }
 
 // include common functions
-include_once "common.php";
+include_once 'common.php';
 
 // handle input
-$action = $_GET["action"];
-$actionIsReserve = ($action == "reserve");
-$actionIsEdit = ($action == "edit");
-$actionIsAdd = ($action == "add");
-$listId = $_GET["listId"];
+$action = $_GET['action'];
+$actionIsReserve = ($action == 'reserve');
+$actionIsEdit = ($action == 'edit');
+$actionIsAdd = ($action == 'add');
+$listId = $_GET['listId'];
 if ($actionIsReserve)
 {
-	$wishId = $_GET["wishId"];
+	$wishId = $_GET['wishId'];
 	$connection = dbConnect();
-	$result = mysql_query("SELECT wish_id, short_description, max_reservation_count, reservation_key, user_id, shared_with_user_id"
-		. " FROM wishes INNER JOIN wishlists ON wishlists.wishlist_id = wishes.wishlist_id WHERE wish_id = " . $wishId);
-	if (!$result)
+	try
 	{
-		die("Could not retrieve wish information from database: " . mysql_error());
+		$result = dbExecute($connection,
+			'SELECT wish_id, short_description, max_reservation_count, reservation_key, user_id, shared_with_user_id'
+				. ' FROM wishes INNER JOIN wishlists ON wishlists.wishlist_id = wishes.wishlist_id WHERE wish_id = :wishId',
+			[':wishId' => $wishId]);
+		
+		$row = dbFetch($result);
 	}
-	$row = mysql_fetch_row($result);
-	$description = $row[1];
-	$maxReservationCount = $row[2];
-	$reservationKey = decrypt($row[3]);
-	$listUserId = $row[4];
-	$listSharedWithUserId = $row[5];
-	$result = mysql_query("SELECT reservation_id, `key`, reserved_by_user_id FROM reservations");
-	if (!$result)
+	catch (PDOException $ex)
 	{
-		die("Could not retrieve reservation information from database: " . mysql_error());
+		die('Could not retrieve wish information from database: ' . $ex->getMessage());
 	}
+	$description = $row->short_description;
+	$maxReservationCount = $row->max_reservation_count;
+	$reservationKey = decrypt($row->reservation_key);
+	$listUserId = $row->user_id;
+	$listSharedUserId = $row->shared_with_user_id;
 	$reservationCount = 0;
-	while ($row = mysql_fetch_assoc($result))
+	try
 	{
-		$key = decrypt($row["key"]);
-		if ($key == $reservationKey)
-			$reservationCount++;
+		$result = dbExecute($connection, 'SELECT reservation_id, `key`, reserved_by_user_id FROM reservations');
+		while ($row = dbFetch($result))
+		{
+			$key = decrypt($row->key);
+			if ($key == $reservationKey)
+				$reservationCount++;
+		}
+	}
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve reservation information from database: ' . $ex->getMessage());
 	}
 	dbDisconnect($connection);
 }
 elseif ($actionIsEdit)
 {
-	$wishId = $_GET["wishId"];
+	$wishId = $_GET['wishId'];
 	$connection = dbConnect();
-	$result = mysql_query("SELECT wish_id, category_id, short_description, link, max_reservation_count FROM wishes"
-		. " INNER JOIN wishlists ON wishlists.wishlist_id = wishes.wishlist_id WHERE wish_id = " . $wishId);
-	if (!$result)
+	try
 	{
-		die("Could not retrieve wish information from database: " . mysql_error());
+		$result = dbExecute($connection,
+			 'SELECT wish_id, category_id, short_description, link, max_reservation_count FROM wishes'
+				. ' INNER JOIN wishlists ON wishlists.wishlist_id = wishes.wishlist_id WHERE wish_id = :wishId',
+			[':wishId' => $wishId]);
+
+		$row = dbFetch($result);
 	}
-	$row = mysql_fetch_row($result);
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve wish information from database: ' . $ex->getMessage());
+	}
 	dbDisconnect($connection);
-	$categoryId = $row[1];
-	$description = $row[2];
-	$link = $row[3];
-	$maxReservationCount = $row[4];
+	$categoryId = $row->category_id;
+	$description = $row->short_description;
+	$link = $row->link;
+	$maxReservationCount = $row->max_reservation_count;
 }
 elseif ($actionIsAdd)
 {
-	$categoryId = $_GET["categoryId"];
+	$categoryId = $_GET['categoryId'];
 }
 ?>
 <form name="wish_dialog" method="post" action="list.php">
@@ -79,15 +94,15 @@ elseif ($actionIsAdd)
 <?php
 if ($actionIsReserve)
 {
-	echo "Reservera önskningen";
+	echo 'Reservera önskningen';
 }
 elseif ($actionIsEdit)
 {
-	echo "Ändra önskan";
+	echo 'Ändra önskan';
 }
 else
 {
-	echo "Ny önskan";
+	echo 'Ny önskan';
 }
 ?>
 					</h2>
@@ -120,7 +135,7 @@ if ($actionIsReserve)
 	{
 		for ($i = 1; $i <= ($maxReservationCount - $reservationCount); $i++)
 		{
-			echo "<option value=\"" . $i . "\">" . $i . "</option>\n";
+			echo '<option value="' . $i . '">' . $i . "</option>\n";
 		}
 	}
 ?>
@@ -146,15 +161,22 @@ else
 		echo "<option value=\"-1\"></option>\n";
 	}
 	$connection = dbConnect();
-	$result = mysql_query("SELECT category_id, name FROM categories ORDER BY category_id ASC");
-	while ($row = mysql_fetch_assoc($result))
+	try
 	{
-		echo "<option value=\"" . $row["category_id"] . "\"";
-		if (($actionIsEdit || $actionIsAdd) && $row["category_id"] == $categoryId)
+		$result = dbExecute($connection, 'SELECT category_id, name FROM categories ORDER BY category_id ASC');
+		while ($row = dbFetch($result))
 		{
-			echo " selected=\"true\"";
+			echo '<option value="' . $row->category_id . '"';
+			if (($actionIsEdit || $actionIsAdd) && $row->category_id == $categoryId)
+			{
+				echo ' selected="true"';
+			}
+			echo '>' . $row->name . "</option>\n";
 		}
-		echo ">" . $row["name"] . "</option>\n";
+	}
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve categories from database: ' . $ex->getMessage());
 	}
 	dbDisconnect($connection);
 ?>
@@ -168,15 +190,15 @@ else
 							<td align="right">
 								<select name="count" style="width: 40px">
 <?php
-	echo "<option value=\"-1\"" . ($actionIsEdit && $maxReservationCount == -1 ? " selected=\"true\"" : "") . ">*</option>\n";
+	echo '<option value="-1"' . ($actionIsEdit && $maxReservationCount == -1 ? ' selected="true"' : '') . ">*</option>\n";
 	for ($i = 1; $i <= 15; $i++)
 	{
-		echo "<option value=\"" . $i . "\"";
+		echo '<option value="' . $i . '"';
 		if ($actionIsEdit && $i == $maxReservationCount || !$actionIsEdit && $i == 1)
 		{
-			echo " selected=\"true\"";
+			echo ' selected="true"';
 		}
-		echo ">" . $i . "</option>\n";
+		echo '>' . $i . "</option>\n";
 	}
 ?>
 								</select>
@@ -205,8 +227,8 @@ else
 				</td>
 				<td valign="bottom" align="right">
 <?php
-echo "<a href=\"javascript:submitDialog()\">"
-	. ($actionIsReserve ? "Reservera" : ($actionIsEdit ? "Ändra" : "Lägg&nbsp;till"))
+echo '<a href="javascript:submitDialog()">'
+	. ($actionIsReserve ? 'Reservera' : ($actionIsEdit ? 'Ändra' : 'Lägg&nbsp;till'))
 	. "</a>&nbsp;|&nbsp;<a href=\"javascript:cancelDialog()\">Avbryt</a>\n";
 ?>
 				</td>
