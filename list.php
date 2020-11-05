@@ -1,11 +1,13 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
+
+// ini_set('display_errors', '1');
+
+session_start();
+
 // include common functions
 include_once 'common.php';
 
-ini_set('display_errors', '1');
-
-header('Content-Type: text/html; charset=utf-8');
-session_start();
 // verify that user is logged in
 if (!isset($_SESSION['user_id']))
 {

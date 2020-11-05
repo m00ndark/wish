@@ -41,7 +41,8 @@ if ($postbackPage == 'index.php')
 		// retrieve name from database
 		try
 		{
-			$result = dbExecute($connection, 'SELECT user_id, user_name FROM users WHERE user_id = ' . mysql_insert_id());
+			$result = dbExecute($connection, 'SELECT user_id, user_name FROM users WHERE user_id = :userId',
+				[':userId' => $connection->lastInsertId()]);
 			$row = dbFetch($result);
 		}
 		catch (PDOException $ex)
@@ -52,9 +53,9 @@ if ($postbackPage == 'index.php')
 		$sessionUserId = $row->user_id;
 		$sessionUserName = $row->user_name;
 		// notify about new user
-		$headers = 'From: wish@m00ndark.com\r\nReply-To: mattias.wijkstrom@gmail.com';
-		$body = 'Ny anv�ndare skapad: ' . $newUserFirstName . '\r\n\r\nhttp://wish.m00ndark.com';
-		mail('mattias.wijkstrom@gmail.com', 'Familjens �nskelista - ny anv�ndare', $body, $headers);
+		$headers = "From: wish@m00ndark.com\r\nReply-To: mattias.wijkstrom@gmail.com";
+		$body = "Ny användare skapad: $newUserFirstName\r\n\r\nhttp://wish.m00ndark.com";
+		mail('mattias.wijkstrom@gmail.com', 'Familjens Önskelista - ny användare', $body, $headers);
 	}
 	else if ($_POST['action'] == 'login_existing')
 	{
@@ -152,11 +153,11 @@ if ($postbackPage == 'pwd.php')
 		}
 		// compose and send mail
 		$emailAddress = $row->email;
-		$headers = 'From: wish@m00ndark.com\r\nReply-To: mattias.wijkstrom@gmail.com';
-		$body = 'F�r att �ndra ditt l�senord p� Familjens �nskelista, klicka p� l�nken nedan:\r\n\r\n'
-			. 'http://wish.m00ndark.com/v2/pwd.php?userid=' . $userId . '&code=' . $recoveryCode . '\r\n\r\n'
-			. 'Denna l�nk �r giltig (g�r att anv�nda) till och med ' . date('Y-m-d H:i:s', $expireTime) . '.';
-		mail($emailAddress, 'Familjens �nskelista - nytt l�senord', $body, $headers);
+		$headers = "From: wish@m00ndark.com\r\nReply-To: mattias.wijkstrom@gmail.com";
+		$body = "För att ändra ditt lösenord på Familjens Önskelista, klicka på länken nedan:\r\n\r\n"
+			. "http://wish.m00ndark.com/v4/pwd.php?userid=$userId&code=$recoveryCode\r\n\r\n"
+			. 'Denna länk är giltig (går att använda) till och med ' . date('Y-m-d H:i:s', $expireTime) . '.';
+		mail($emailAddress, 'Familjens Önskelista - nytt lösenord', $body, $headers);
 		$newLocation = $postbackPage . '?userid=' . $userId;
 	}
 	else if ($_POST['action'] == 'edit')

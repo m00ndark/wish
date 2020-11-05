@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+
 session_start();
+
 // verify that user is logged in
 if (!isset($_SESSION['user_id']))
 {
@@ -87,7 +89,7 @@ elseif ($actionIsAdd)
 	<input name="action" type="hidden" value="<?php echo $action; ?>">
 	<input name="wishlist_id" type="hidden" value="<?php echo $listId; ?>">
 	<input name="wish_id" type="hidden" value="<?php if ($actionIsReserve || $actionIsEdit) { echo $wishId; } ?>">
-	<table width="520" height="110" border=0>
+	<table width="520" height="110" border="0">
 			<tr>
 				<td colspan="2">
 					<h2 style="margin: 0px;">

@@ -3,7 +3,6 @@ header('Content-Type: text/html; charset=utf-8');
 
 // ini_set('display_errors', '1');
 
-// start session
 session_start();
 
 if (isset($_POST['action']))

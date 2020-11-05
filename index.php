@@ -1,10 +1,10 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
+// ini_set('display_errors', '1');
+
 // start session
 session_start();
-
-ini_set('display_errors', '1');
 
 if (isset($_GET['test']))
 {
