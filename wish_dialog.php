@@ -211,7 +211,7 @@ else
 								Beskrivning:&nbsp;
 							</td>
 							<td colspan="4">
-								<input name="description" type="text" value="<?php if ($actionIsEdit) { echo wash($description); } ?>" style="width: 300px">
+								<input name="description" id="focus" type="text" value="<?php if ($actionIsEdit) { echo wash($description); } ?>" style="width: 300px">
 							</td>
 						</tr>
 						<tr>

@@ -105,7 +105,7 @@ else
 								Titel:&nbsp;
 							</td>
 							<td>
-								<input name="title" type="text" value="<?php if ($actionIsEdit) { echo $title; } ?>" style="width: 300px">
+								<input name="title" id="focus" type="text" value="<?php if ($actionIsEdit) { echo $title; } ?>" style="width: 300px">
 							</td>
 						</tr>
 						<tr>

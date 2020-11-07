@@ -334,8 +334,8 @@ elseif ($postbackPage == 'list.php')
 			{
 				die('Could not retrieve wish information from database: ' . $ex->getMessage());
 			}
-			$reservationKey = decrypt($row->reservation_key);
 			$categoryId = $row->category_id;
+			$reservationKey = decrypt($row->reservation_key);
 			$reserveCount = $_POST['count'];
 			// add specified number of rows to reservations table with correct reservation key
 			for ($i = 0; $i < $reserveCount; $i++)
@@ -434,13 +434,14 @@ elseif ($postbackPage == 'list.php')
 			// find reservation key for wish
 			try
 			{
-				$result = dbExecute($connection, 'SELECT wish_id, reservation_key FROM wishes WHERE wish_id = :wishId', [':wishId' => $wishId]);
+				$result = dbExecute($connection, 'SELECT wish_id, reservation_key, category_id FROM wishes WHERE wish_id = :wishId', [':wishId' => $wishId]);
 				$row = dbFetch($result);
 			}
 			catch (PDOException $ex)
 			{
 				die('Could not retrieve wish information from database: ' . $ex->getMessage());
 			}
+			$categoryId = $row->category_id;
 			$reservationKey = decrypt($row->reservation_key);
 			$reservationIds = [];
 			// get all reservations and pick those with the same reservation key as the wish
