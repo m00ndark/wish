@@ -22,7 +22,7 @@ try
 		}
 		while (array_search($key, $keys) !== false);
 
-		$key = '1108752362';
+		// $key = '1108752362';
 		$keys[$id] = $key;
 
 		$encKey = encrypt($key);
