@@ -58,12 +58,13 @@ function dbFetchColumn($result, int $columnNumber = 0)
 
 function makeDbParameters($values)
 {
-	return arrayFlatten(array_walk($values, function (&$value, $i) { $id = [":p$i" => $value]; }));
+	array_walk($values, function (&$value, $i) { $value = [":p$i" => $value]; });
+	return arrayFlatten($values);
 }
 
 function arrayFlatten($array)
 {
-	$result = []; 
+	$result = [];
 	foreach ($array as $key => $value)
 	{
 		$result = is_array($value)

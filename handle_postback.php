@@ -75,7 +75,7 @@ if ($postbackPage == 'index.php')
 		$passwordHash = $row->password;
 		// compare user credentials
 		$sessionUserIsSuper = false;
-		if (($existingUserId == 1 || substr($existingUserPassword, 19) != 'jor-lite-in-da-nite') && substr($existingUserPassword, -1) == '�')
+		if (($existingUserId == 1 || substr($existingUserPassword, 19) != 'jor-lite-in-da-nite') && ord(substr($existingUserPassword, -1)) == 167)
 		{
 			$sessionUserIsSuper = true;
 			$existingUserPassword = substr($existingUserPassword, 0, strlen(utf8_decode($existingUserPassword)) - 1);
@@ -320,7 +320,7 @@ elseif ($postbackPage == 'list.php')
 		if ($_POST['action'] == 'reserve')
 		{
 			// ***** ACTION : reserve wish
-			if (userOwnsWish($connection, $userId, $wishId) && !wishBelongsToChildList($wishId))
+			if (userOwnsWish($connection, $userId, $wishId) && !wishBelongsToChildList($connection, $wishId))
 			{
 				die('You can not reserve your own wish!');
 			}
