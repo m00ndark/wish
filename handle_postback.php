@@ -32,7 +32,7 @@ if ($postbackPage == 'index.php')
 		try
 		{
 			dbExecute($connection, 'INSERT INTO users (user_name, password) values (:userName, :password)',
-				[':userName' => $newUserFirstName, ':password' => $newUserPassword]);
+				[':userName' => $newUserFirstName, ':password' => generateHash($newUserPassword)]);
 		}
 		catch (PDOException $ex)
 		{
