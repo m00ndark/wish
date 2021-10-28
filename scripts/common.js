@@ -11,6 +11,7 @@ function loadPage(pageRequest, containerId)
 		document.getElementById(containerId).innerHTML = pageRequest.responseText;
 		doCustomDialogAction();
 		document.getElementById(containerId).style.display = "block";
+		document.getElementById("focus").focus();
 	}
 }
 

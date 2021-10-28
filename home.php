@@ -1,49 +1,61 @@
 <?php
-// include common functions
-include_once "common.php";
-
 header('Content-Type: text/html; charset=utf-8');
+
+// ini_set('display_errors', '1');
+
 session_start();
+
+// include common functions
+include_once 'common.php';
+
 // verify that user is logged in
-if (!isset($_SESSION["user_id"]))
+if (!isset($_SESSION['user_id']))
 {
-	forwardTo("index.php");
+	forwardTo('index.php');
 }
-if (isset($_GET["action"]) || isset($_POST["action"]))
+if (isset($_GET['action']) || isset($_POST['action']))
 {
 	// handle post back
 	define('_VALID_INCLUDE', TRUE);
-	include "handle_postback.php";
+	include 'handle_postback.php';
 }
+
+$userId = $_SESSION['user_id'];
+$userIsSuper = $_SESSION['user_is_super'];
 
 // check if any lists should be unlocked
 $connection = dbConnect();
-$result = mysql_query("SELECT wishlist_id, is_locked_for_edit, UNIX_TIMESTAMP(locked_until)"
-	. " locked_until_timestamp FROM wishlists WHERE is_locked_for_edit = 1 ORDER BY user_id ASC, title ASC");
-if (!$result)
+$yesterday = mktime(date('H'), date('i'), date('s'), date('n'), date('j') - 1, date('Y')); // now - 1 day
+$unlockLists = [];
+try
 {
-	die("Could not retrieve wish lists from database: " . mysql_error());
-}
-$ulCount = 0;
-$unlockLists = array();
-$now = mktime(date("H"), date("i"), date("s"), date("n"), date("j") - 1, date("Y"), 0); // now, -1 day
-while ($row = mysql_fetch_assoc($result))
-{
-	$lockDate = $row["locked_until_timestamp"];
-	if ($lockDate < $now)
+	$result = dbExecute($connection, 'SELECT wishlist_id, is_locked_for_edit, UNIX_TIMESTAMP(locked_until)'
+		. ' locked_until_timestamp FROM wishlists WHERE is_locked_for_edit = 1 ORDER BY user_id ASC, title ASC');
+	while ($row = dbFetch($result))
 	{
-		$unlockLists[$ulCount++] = $row["wishlist_id"];
+		$lockDate = $row->locked_until_timestamp;
+		if ($lockDate < $yesterday)
+		{
+			array_push($unlockLists, $row->wishlist_id);
+		}
 	}
+}
+catch (PDOException $ex)
+{
+	die('Could not retrieve wish lists from database: ' . $ex->getMessage());
 }
 
 // unlock overdue lists
-for ($i = 0; $i < $ulCount; $i++)
+foreach ($unlockLists as $unlockListId)
 {
-	$result = mysql_query("UPDATE wishlists SET is_locked_for_edit = 0,"
-		. " locked_until = NULL WHERE wishlist_id = " . $unlockLists[$i]);
-	if (!$result)
+	try
 	{
-		die("Could not update wish list with unlock information in database: " . mysql_error());
+		dbExecute($connection, 'UPDATE wishlists SET is_locked_for_edit = 0, locked_until = NULL WHERE wishlist_id = :wishlistId',
+			[':wishlistId' => $unlockListId]);
+	}
+	catch (PDOException $ex)
+	{
+		die('Could not update wish list with unlock information in database: ' . $ex->getMessage());
 	}
 }
 dbDisconnect($connection);
@@ -260,29 +272,30 @@ dbDisconnect($connection);
 												<tr><td height="9"></td></tr>
 <?php
 $connection = dbConnect();
-$result = mysql_query("SELECT wishlist_id, wishlists.user_id, shared_with_user_id, user_name, title, is_locked_for_edit, locked_until_timestamp, is_child_list, child_name FROM ("
-	. "SELECT wishlist_id, user_id, IF(shared_with_user_id IS NULL, NULL, IF(shared_with_user_id != " . $_SESSION["user_id"] . ", shared_with_user_id, user_id))"
-	. " shared_with_user_id, title, is_locked_for_edit, UNIX_TIMESTAMP(locked_until) locked_until_timestamp, is_child_list, child_name FROM wishlists"
-	. ($_SESSION["user_is_super"] ? "" : " WHERE user_id = " . $_SESSION["user_id"] . " OR shared_with_user_id = " . $_SESSION["user_id"])
-	. ") AS wishlists INNER JOIN users ON wishlists.user_id = users.user_id AND wishlists.shared_with_user_id IS NULL OR wishlists.shared_with_user_id = users.user_id ORDER BY title ASC, child_name ASC");
-if (!$result)
+try
 {
-	die("Could not retrieve own wish lists from database: " . mysql_error());
-}
-if (mysql_num_rows($result) > 0)
-{
-	while ($row = mysql_fetch_assoc($result))
+	$result = dbExecute($connection,
+		'SELECT wishlist_id, wishlists.user_id, shared_with_user_id, user_name, title, is_locked_for_edit, locked_until_timestamp, is_child_list, child_name FROM ('
+			. 'SELECT wishlist_id, user_id, IF(shared_with_user_id IS NULL, NULL, IF(shared_with_user_id != :userId, shared_with_user_id, user_id))'
+			. ' shared_with_user_id, title, is_locked_for_edit, UNIX_TIMESTAMP(locked_until) locked_until_timestamp, is_child_list, child_name FROM wishlists'
+			. ($userIsSuper ? '' : ' WHERE user_id = :userId OR shared_with_user_id = :userId')
+			. ') AS wishlists INNER JOIN users ON wishlists.user_id = users.user_id AND wishlists.shared_with_user_id IS NULL OR wishlists.shared_with_user_id = users.user_id ORDER BY title ASC, child_name ASC',
+		[':userId' => $userId]);
+
+	$gotRows = false;
+	while ($row = dbFetch($result))
 	{
-		$childName = $row["is_child_list"] == 1 ? $row["child_name"] : "";
-		$childName = strlen($childName) > 0 && substr($childName, -1) != "s" ? $childName . "s" : $childName;
+		$gotRows = true;
+		$childName = $row->is_child_list == 1 ? $row->child_name : '';
+		$childName = strlen($childName) > 0 && substr($childName, -1) != 's' ? $childName . 's' : $childName;
 		echo "	<tr onMouseOver=\"highlightRow(this, false);\" onMouseOut=\"dehighlightRow(this);\">\n";
 		echo "		<td class=\"list_row_left\">\n";
-		echo "			" . (($_SESSION["user_is_super"]) ? "[" . $row["user_name"] . "] " : "") . "<a href=\"list.php?id=" . $row["wishlist_id"] . "\">" . $row["title"] . "</a>";
-		if (strlen($childName) > 0 || $row["shared_with_user_id"] != null)
+		echo '			' . (($userIsSuper) ? '[' . $row->user_name . '] ' : '') . '<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . '</a>';
+		if (strlen($childName) > 0 || $row->shared_with_user_id != null)
 		{
-			echo " (" . (strlen($childName) > 0 ? $childName . " önskelista" : "")
-				. (strlen($childName) > 0 && $row["shared_with_user_id"] != null ? ", " : "")
-				. ($row["shared_with_user_id"] != null ? "delas med " . $row["user_name"] : "") . ")\n";
+			echo ' (' . (strlen($childName) > 0 ? $childName . ' önskelista' : '')
+				. (strlen($childName) > 0 && $row->shared_with_user_id != null ? ', ' : '')
+				. ($row->shared_with_user_id != null ? 'delas med ' . $row->user_name : '') . ")\n";
 		}
 		else
 		{
@@ -290,27 +303,32 @@ if (mysql_num_rows($result) > 0)
 		}
 		echo "		</td>\n";
 		echo "		<td class=\"list_row_right\">\n";
-		if ($row["is_locked_for_edit"] == 0)
+		if ($row->is_locked_for_edit == 0)
 		{
-			echo "			<a href=\"javascript:lockList(" . $row["wishlist_id"] . ")\">Lås</a>&nbsp;|&nbsp;"
-				. "<a href=\"javascript:editList(" . $row["wishlist_id"] . ")\">Ändra</a>";
-			echo ($row["user_id"] == $_SESSION["user_id"] ? "&nbsp;|&nbsp;<a href=\"javascript:deleteList(" . $row["wishlist_id"] . ")\">Ta bort</a>" : "") . "\n";
+			echo '			<a href="javascript:lockList(' . $row->wishlist_id . ')">Lås</a>&nbsp;|&nbsp;'
+				. '<a href="javascript:editList(' . $row->wishlist_id . ')">Ändra</a>';
+			echo ($row->user_id == $userId ? '&nbsp;|&nbsp;<a href="javascript:deleteList(' . $row->wishlist_id . ')">Ta bort</a>' : '') . "\n";
 		}
 		else
 		{
-			echo "			<i>Låst t.o.m. " . date("Y-m-d", $row["locked_until_timestamp"]) . "</i>\n";
+			echo '			<i>Låst t.o.m. ' . date('Y-m-d', $row->locked_until_timestamp) . "</i>\n";
 		}
 		echo "		</td>\n";
 		echo "	</tr>\n";
 	}
+
+	if (!$gotRows)
+	{
+		echo "	<tr>\n";
+		echo "		<td class=\"small\">\n";
+		echo "			(klicka på \"Lägg till\" för att skapa en ny lista)\n";
+		echo "		</td>\n";
+		echo "	</tr>\n";
+	}
 }
-else
+catch (PDOException $ex)
 {
-	echo "	<tr>\n";
-	echo "		<td class=\"small\">\n";
-	echo "			(klicka på \"Lägg till\" för att skapa en ny lista)\n";
-	echo "		</td>\n";
-	echo "	</tr>\n";
+	die('Could not retrieve own wish lists from database: ' . $ex->getMessage());
 }
 dbDisconnect($connection);
 ?>
@@ -327,29 +345,28 @@ dbDisconnect($connection);
 												<tr><td height="9"></td></tr>
 <?php
 $connection = dbConnect();
-$result = mysql_query("SELECT wishlist_id, user_id, shared_with_user_id, IF(child_name = '', user_name, child_name) user_name, title FROM ("
-. "SELECT wishlist_id, user_id, shared_with_user_id, user_name, child_name, title FROM ("
-. "SELECT user_x_id, user_y_id, CONCAT_WS(' & ', users_x.user_name, users_y.user_name) user_name FROM ("
-. "SELECT DISTINCT IF(shared_with_user_id IS NULL OR shared_with_user_id > user_id, user_id, shared_with_user_id) user_x_id,"
-. " IF(shared_with_user_id IS NULL OR shared_with_user_id > user_id, shared_with_user_id, user_id) user_y_id FROM wishlists"
-. " WHERE is_locked_for_edit = 1) AS wishlists_users LEFT JOIN users AS users_x ON user_x_id = users_x.user_id"
-. " LEFT JOIN users AS users_y ON user_y_id = users_y.user_id"
-. " WHERE user_x_id != " . $_SESSION["user_id"] . " AND (user_y_id != " . $_SESSION["user_id"] . " OR user_y_id IS NULL))"
-. " AS wishlists_user_name INNER JOIN wishlists ON user_id = user_x_id AND"
-. " (shared_with_user_id = user_y_id OR shared_with_user_id IS NULL AND user_y_id IS NULL)"
-. " OR user_id = user_y_id AND shared_with_user_id = user_x_id WHERE is_locked_for_edit = 1) AS wishlists_by_user_name ORDER BY user_name ASC");
-if (!$result)
+try
 {
-	die("Could not retrieve others' wish lists from database: " . mysql_error());
-}
-if (mysql_num_rows($result) > 0)
-{
-	$last_user_name = "";
-	while ($row = mysql_fetch_assoc($result))
+	$result = dbExecute($connection,
+		'SELECT wishlist_id, user_id, shared_with_user_id, IF(child_name = \'\', user_name, child_name) user_name, title FROM ('
+			. 'SELECT wishlist_id, user_id, shared_with_user_id, user_name, child_name, title FROM ('
+			. 'SELECT user_x_id, user_y_id, CONCAT_WS(\' & \', users_x.user_name, users_y.user_name) user_name FROM ('
+			. 'SELECT DISTINCT IF(shared_with_user_id IS NULL OR shared_with_user_id > user_id, user_id, shared_with_user_id) user_x_id,'
+			. ' IF(shared_with_user_id IS NULL OR shared_with_user_id > user_id, shared_with_user_id, user_id) user_y_id FROM wishlists'
+			. ' WHERE is_locked_for_edit = 1) AS wishlists_users LEFT JOIN users AS users_x ON user_x_id = users_x.user_id'
+			. ' LEFT JOIN users AS users_y ON user_y_id = users_y.user_id'
+			. ' WHERE user_x_id != :userId AND (user_y_id != :userId OR user_y_id IS NULL))'
+			. ' AS wishlists_user_name INNER JOIN wishlists ON user_id = user_x_id AND'
+			. ' (shared_with_user_id = user_y_id OR shared_with_user_id IS NULL AND user_y_id IS NULL)'
+			. ' OR user_id = user_y_id AND shared_with_user_id = user_x_id WHERE is_locked_for_edit = 1) AS wishlists_by_user_name ORDER BY user_name ASC',
+		[':userId' => $userId]);
+
+	$last_user_name = '';
+	while ($row = dbFetch($result))
 	{
-		if ($row["user_name"] != $last_user_name)
+		if ($row->user_name != $last_user_name)
 		{
-			if ($last_user_name != "")
+			if ($last_user_name != '')
 			{
 				echo "	<tr>\n";
 				echo "		<td height=\"20\"></td>\n";
@@ -357,29 +374,34 @@ if (mysql_num_rows($result) > 0)
 			}
 			echo "	<tr>\n";
 			echo "		<td class=\"list_header\" colspan=\"3\">\n";
-			echo "			<h3>" . $row["user_name"] . "</h3>\n";
+			echo '			<h3>' . $row->user_name . "</h3>\n";
 			echo "		</td>\n";
 			echo "	</tr>\n";
-			$last_user_name = $row["user_name"];
+			$last_user_name = $row->user_name;
 		}
 		echo "	<tr onMouseOver=\"highlightRow(this, true);\" onMouseOut=\"dehighlightRow(this);\">\n";
 		echo "		<td width=\"5\">&nbsp;&nbsp;</td>\n";
 		echo "		<td width=\"100%\" class=\"list_row_left\">\n";
-		echo "			<a href=\"list.php?id=" . $row["wishlist_id"] . "\">" . $row["title"] . "</a>\n";
+		echo '			<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . "</a>\n";
 		echo "		</td>\n";
 		echo "		<td class=\"list_row_right\">\n";
-	// right stuff here
+		// right stuff here
+		echo "		</td>\n";
+		echo "	</tr>\n";
+	}
+
+	if ($last_user_name == '')
+	{
+		echo "	<tr>\n";
+		echo "		<td class=\"small\">\n";
+		echo "			(det finns för närvarande inga låsta listor)\n";
 		echo "		</td>\n";
 		echo "	</tr>\n";
 	}
 }
-else
+catch (PDOException $ex)
 {
-	echo "	<tr>\n";
-	echo "		<td class=\"small\">\n";
-	echo "			(det finns för närvarande inga låsta listor)\n";
-	echo "		</td>\n";
-	echo "	</tr>\n";
+	die('Could not retrieve others\' wish lists from database: ' . $ex->getMessage());
 }
 dbDisconnect($connection);
 ?>
@@ -402,7 +424,7 @@ dbDisconnect($connection);
 /*
 	foreach ($_SESSION as $key => $value)
 	{
-		echo $key . " = " . $value . "<br>";
+		echo $key . ' = ' . $value . '<br>';
 	}
 */
 ?>

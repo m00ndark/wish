@@ -1,30 +1,32 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
+// ini_set('display_errors', '1');
+
 // start session
 session_start();
 
-if (isset($_GET["test"]))
+if (isset($_GET['test']))
 {
 	// run in test mode
-	$_SESSION["environment"] = "test";
+	$_SESSION['environment'] = 'test';
 }
 else
 {
-	unset($_SESSION["environment"]);
+	unset($_SESSION['environment']);
 }
 
 $loginSuccess = true;
 
-if (isset($_POST["action"]))
+if (isset($_POST['action']))
 {
 	// handle post back
 	define('_VALID_INCLUDE', TRUE);
-	include "handle_postback.php";
+	include 'handle_postback.php';
 }
 
 // include common functions
-include_once "common.php";
+include_once 'common.php';
 ?>
 <html>
 	<head>
@@ -103,7 +105,7 @@ include_once "common.php";
 		</script>
 		<title>Familjens Önskelista</title>
 	</head>
-	<body<?php if (!$loginSuccess) { echo " onload=\"document.forms['login'].elements['existing_user_password'].focus();\""; } ?>>
+	<body<?php if (!$loginSuccess) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
 		<table class="main">
 			<tr>
 				<td class="header_back">
@@ -133,8 +135,8 @@ include_once "common.php";
 								<form name="login" method="post" action="index.php">
 									<input name="action" type="hidden" value="">
 									<input name="existing_user_name" type="hidden" value="">
-									<input name="next_page" type="hidden" value="<?php echo (isset($_GET["page"]) ? urldecode($_GET["page"]) : "home.php"); ?>">
-									<input name="next_page_params" type="hidden" value="<?php echo (isset($_GET["page"]) && isset($_GET["params"]) ? urldecode($_GET["params"]) : ""); ?>">
+									<input name="next_page" type="hidden" value="<?php echo (isset($_GET['page']) ? urldecode($_GET['page']) : 'home.php'); ?>">
+									<input name="next_page_params" type="hidden" value="<?php echo (isset($_GET['page']) && isset($_GET['params']) ? urldecode($_GET['params']) : ''); ?>">
 
 									<table width="100%">
 										<tr>
@@ -152,15 +154,22 @@ include_once "common.php";
 																<option value="-1"></option>
 <?php
 $connection = dbConnect();
-$result = mysql_query("SELECT user_id, user_name FROM users ORDER BY user_name ASC");
-while ($row = mysql_fetch_assoc($result))
+try
 {
-	echo "<option value=\"" . $row["user_id"] . "\"";
-	if (!$loginSuccess && $row["user_id"] == $_POST["existing_user"])
+	$result = dbExecute($connection, 'SELECT user_id, user_name FROM users ORDER BY user_name ASC');
+	while ($row = dbFetch($result))
 	{
-		echo " selected=\"true\"";
+		echo '<option value="' . $row->user_id . '"';
+		if (!$loginSuccess && $row->user_id == $_POST['existing_user'])
+		{
+			echo ' selected="true"';
+		}
+		echo '>' . $row->user_name . "</option>\n";
 	}
-	echo ">" . $row["user_name"] . "</option>\n";
+}
+catch (PDOException $ex)
+{
+	die('Could not retrieve user names from database: ' . $ex->getMessage());
 }
 dbDisconnect($connection);
 ?>

@@ -1,70 +1,81 @@
 <?php
-// include common functions
-include_once "common.php";
-
 header('Content-Type: text/html; charset=utf-8');
+
+// ini_set('display_errors', '1');
+
 session_start();
+
+// include common functions
+include_once 'common.php';
+
 // verify that user is logged in
-if (!isset($_SESSION["user_id"]))
+if (!isset($_SESSION['user_id']))
 {
-	forwardTo("index.php");
+	forwardTo('index.php');
 }
 
 // show page in print mode? .. set to false as default
 $printMode = false;
 
-if (isset($_POST["action"]) || isset($_GET["action"]))
+if (isset($_POST['action']) || isset($_GET['action']))
 {
 	// handle post back
 	define('_VALID_INCLUDE', TRUE);
-	include "handle_postback.php";
+	include 'handle_postback.php';
 }
 
-if (!isset($_GET["id"]))
+if (!isset($_GET['id']))
 {
-	die("Wish list ID missing!");
+	die('Wish list ID missing!');
 }
-$listId = $_GET["id"];
+$listId = $_GET['id'];
 // retrieve list information
 $connection = dbConnect();
-$result = mysql_query("SELECT wishlist_id, users.user_id, shared_with_user_id, user_name, title, is_locked_for_edit,"
-	. " UNIX_TIMESTAMP(locked_until) locked_until_timestamp, is_child_list, child_name FROM wishlists"
-	. " INNER JOIN users ON wishlists.user_id = users.user_id WHERE wishlist_id = " . $listId);
-if (!$result)
+try
 {
-	die("Could not retrieve wish list information from database: " . mysql_error());
+	$result = dbExecute($connection,
+		 'SELECT wishlist_id, users.user_id, shared_with_user_id, user_name, title, is_locked_for_edit,'
+			. ' UNIX_TIMESTAMP(locked_until) locked_until_timestamp, is_child_list, child_name FROM wishlists'
+			. ' INNER JOIN users ON wishlists.user_id = users.user_id WHERE wishlist_id = :wishlistId',
+		 [':wishlistId' => $listId]);
+	$row = dbFetch($result);
 }
-$row = mysql_fetch_row($result);
-dbDisconnect($connection);
-$listUserId = $row[1];
-$listSharedWithUserId = $row[2];
-$listUserName = $row[3];
-$listTitle = $row[4];
-$listIsLocked = ($row[5] == 1);
-$listLockedUntil = $row[6];
-$listIsChildList = ($row[7] == 1);
-$listChildName = $row[8];
-$listChildName = strlen($listChildName) > 0 && substr($listChildName, -1) != "s" ? $listChildName . "s" : $listChildName;
-$myList = ($listUserId == $_SESSION["user_id"] || $listSharedWithUserId == $_SESSION["user_id"]);
-$unauthorizedCall = (!$myList && !$listIsLocked && !$_SESSION["user_is_super"]);
-$listIsShared = ($listSharedWithUserId != null);
+catch (PDOException $ex)
+{
+	die('Could not retrieve wish list information from database: ' . $ex->getMessage());
+}
+$listUserId = $row->user_id;
+$listSharedUserId = $row->shared_with_user_id;
+$listUserName = $row->user_name;
+$listTitle = $row->title;
+$listIsLocked = ($row->is_locked_for_edit == 1);
+$listLockedUntil = $row->locked_until_timestamp;
+$listIsChildList = ($row->is_child_list == 1);
+$listChildName = $row->child_name;
+$listChildName = strlen($listChildName) > 0 && substr($listChildName, -1) != 's' ? $listChildName . 's' : $listChildName;
+$myList = ($listUserId == $_SESSION['user_id'] || $listSharedUserId == $_SESSION['user_id']);
+$unauthorizedCall = (!$myList && !$listIsLocked && !$_SESSION['user_is_super']);
+$listIsShared = ($listSharedUserId != null);
 if ($listIsShared)
 {
-	$connection = dbConnect();
-	$result = mysql_query("SELECT user_id, user_name FROM users WHERE user_id = " . $listSharedWithUserId);
-	if (!$result)
+	try
 	{
-		die("Could not retrieve shared wish list information from database: " . mysql_error());
+		$result = dbExecute($connection, 'SELECT user_id, user_name FROM users WHERE user_id = :userId',
+			[':userId' => $listSharedUserId]);
+		$row = dbFetch($result);
 	}
-	$row = mysql_fetch_row($result);
-	dbDisconnect($connection);
-	$listSharedUserName = $row[1];
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve shared wish list information from database: ' . $ex->getMessage());
+	}
+	$listSharedUserName = $row->user_name;
 }
+dbDisconnect($connection);
 ?>
 
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="styles/<?php echo ($printMode ? "print" : "main"); ?>.css">
+		<link rel="stylesheet" type="text/css" href="styles/<?php echo ($printMode ? 'print' : 'main'); ?>.css">
 		<script src="scripts/common.js" type="text/javascript"></script>
 		<script language="javascript">
 
@@ -173,7 +184,7 @@ if ($listIsShared)
 		</script>
 		<title>Familjens Önskelista</title>
 	</head>
-	<body<?php if ($printMode) { echo " onload=\"window.print()\""; } ?>>
+	<body<?php if ($printMode) { echo ' onload="window.print()"'; } ?>>
 		<div id="overlay">
 			<img id="loader" src="images/loader.gif">
 		</div>
@@ -220,13 +231,13 @@ else
 	{
 		if ($listIsShared)
 		{
-			$postfix = (substr($listUserName, strlen($listUserName) - 1) == "s" ? "" : "s");
-			$postfixShared = (substr($listSharedUserName, strlen($listSharedUserName) - 1) == "s" ? "" : "s");
-			echo $listUserName . $postfix . " & " . $listSharedUserName . $postfixShared . " önskelista\n";
+			$postfix = (substr($listUserName, strlen($listUserName) - 1) == 's' ? '' : 's');
+			$postfixShared = (substr($listSharedUserName, strlen($listSharedUserName) - 1) == 's' ? '' : 's');
+			echo $listUserName . $postfix . ' & ' . $listSharedUserName . $postfixShared . " önskelista\n";
 		}
 		else
 		{
-			$postfix = (substr($listUserName, strlen($listUserName) - 1) == "s" ? "" : "s");
+			$postfix = (substr($listUserName, strlen($listUserName) - 1) == 's' ? '' : 's');
 			echo $listUserName . $postfix . " önskelista\n";
 		}
 	}
@@ -244,7 +255,7 @@ else
 	if (!$printMode)
 	{
 		echo "<br>\n";
-		if ($myList || $_SESSION["user_is_super"])
+		if ($myList || $_SESSION['user_is_super'])
 		{
 			if (!$listIsLocked)
 			{
@@ -252,13 +263,13 @@ else
 			}
 			else
 			{
-				echo "Listan är låst för ändringar t.o.m. " . date("Y-m-d", $listLockedUntil) . " men det är fortfarande möjligt att utöka "
+				echo 'Listan är låst för ändringar t.o.m. ' . date('Y-m-d', $listLockedUntil) . ' men det är fortfarande möjligt att utöka '
 					. "med nya önskningar. Välj en kategori, beskriv önskningen och klicka på länken för att lägga till en ny önskning.\n";
 			}
 		}
 		else
 		{
-			echo "Listan är låst t.o.m. " . date("Y-m-d", $listLockedUntil)
+			echo 'Listan är låst t.o.m. ' . date('Y-m-d', $listLockedUntil)
 				. ". Klicka på länkarna för att reservera en sak som du har köpt.\n";
 		}
 	}
@@ -271,7 +282,7 @@ if (!$unauthorizedCall)
 {
 	if (!$printMode)
 	{
-		echo "<a href=\"javascript:printList()\">Skriv&nbsp;ut</a>";
+		echo '<a href="javascript:printList()">Skriv&nbsp;ut</a>';
 		if ($myList)
 		{
 			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>\n";
@@ -299,53 +310,59 @@ if (!$unauthorizedCall)
 												<tr><td height="9"></td></tr>
 <?php
 	$connection = dbConnect();
-	$result = mysql_query("SELECT wishes.wish_id, categories.category_id, categories.name, modify_date,"
-		. " short_description, link, max_reservation_count, reservation_key FROM wishes"
-		. " INNER JOIN categories ON wishes.category_id = categories.category_id"
-		. " WHERE wishlist_id = " . $listId . " ORDER BY category_id ASC, short_description ASC");
-	if (!$result)
+	$wishes = [];
+	$rowCount = 0;
+	try
 	{
-		die("Could not retrieve wish list information from database: " . mysql_error());
-	}
-	if (mysql_num_rows($result) > 0)
-	{
-		$wishes = array();
-		$rowCount = 0;
-		while ($row = mysql_fetch_assoc($result))
+		$result = dbExecute($connection,
+			'SELECT wishes.wish_id, categories.category_id, categories.name, modify_date,'
+				. ' short_description, link, max_reservation_count, reservation_key FROM wishes'
+				. ' INNER JOIN categories ON wishes.category_id = categories.category_id'
+				. ' WHERE wishlist_id = :wishlistId ORDER BY category_id ASC, short_description ASC',
+			[':wishlistId' => $listId]);
+
+		while ($row = dbFetch($result))
 		{
-			$wishes[$rowCount]["wish_id"] = $row["wish_id"];
-			$wishes[$rowCount]["category_id"] = $row["category_id"];
-			$wishes[$rowCount]["name"] = $row["name"];
-			$wishes[$rowCount]["modify_date"] = $row["modify_date"];
-			$wishes[$rowCount]["short_description"] = $row["short_description"];
-			$wishes[$rowCount]["link"] = $row["link"];
-			$wishes[$rowCount]["max_reservation_count"] = $row["max_reservation_count"];
-			$wishes[$rowCount]["reservation_count"] = $row["reservation_count"];
-			$wishes[$rowCount]["reservation_key"] = decrypt($row["reservation_key"]);
-			$wishes[$rowCount]["reservations"] = array();
+			$wishes[$rowCount]['wish_id'] = $row->wish_id;
+			$wishes[$rowCount]['category_id'] = $row->category_id;
+			$wishes[$rowCount]['name'] = $row->name;
+			$wishes[$rowCount]['modify_date'] = $row->modify_date;
+			$wishes[$rowCount]['short_description'] = $row->short_description;
+			$wishes[$rowCount]['link'] = $row->link;
+			$wishes[$rowCount]['max_reservation_count'] = $row->max_reservation_count;
+			$wishes[$rowCount]['reservation_count'] = $row->reservation_count;
+			$wishes[$rowCount]['reservation_key'] = decrypt($row->reservation_key);
+			$wishes[$rowCount]['reservations'] = [];
 			$rowCount++;
 		}
-		if ($rowCount > 0)
+	}
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve wish list information from database: ' . $ex->getMessage());
+	}
+	if ($rowCount > 0)
+	{
+		try
 		{
-			$result = mysql_query("SELECT reservation_id, `key`, reserved_by_user_id FROM reservations");
-			if (!$result)
+			$result = dbExecute($connection, 'SELECT reservation_id, `key`, reserved_by_user_id FROM reservations');
+			while ($row = dbFetch($result))
 			{
-				die("Could not retrieve reservation information from database: " . mysql_error());
-			}
-			while ($row = mysql_fetch_assoc($result))
-			{
-				$key = decrypt($row["key"]);
-				$wishesRow = recursiveArraySearch($wishes, $key, "reservation_key");
+				$key = decrypt($row->key);
+				$wishesRow = recursiveArraySearch($wishes, $key, 'reservation_key');
 				if ($wishesRow !== false)
 				{
-					$wishes[$wishesRow]["reservations"][] = decrypt($row["reserved_by_user_id"]);
+					$wishes[$wishesRow]['reservations'][] = decrypt($row->reserved_by_user_id);
 				}
 			}
+		}
+		catch (PDOException $ex)
+		{
+			die('Could not retrieve reservation information from database: ' . $ex->getMessage());
 		}
 		$last_category_id = -1;
 		for ($row = 0; $row < $rowCount; $row++)
 		{
-			if ($wishes[$row]["category_id"] != $last_category_id)
+			if ($wishes[$row]['category_id'] != $last_category_id)
 			{
 				if ($last_category_id != -1)
 				{
@@ -355,93 +372,96 @@ if (!$unauthorizedCall)
 				}
 				echo "	<tr>\n";
 				echo "		<td class=\"list_header_left\" colspan=\"3\">\n";
-				echo "			<a name=\"category-" . $wishes[$row]["category_id"] . "\"></a>\n";
-				echo "			<h3>" . $wishes[$row]["name"] . "</h3>\n";
+				echo '			<a name="category-' . $wishes[$row]['category_id'] . "\"></a>\n";
+				echo '			<h3>' . $wishes[$row]['name'] . "</h3>\n";
 				echo "		</td>\n";
 				echo "		<td class=\"list_header_right\">\n";
 				if (!$printMode && $myList)
 				{
-					echo "			<a href=\"javascript:addWish(" . $wishes[$row]["category_id"] . ")\">Lägg&nbsp;till</a>\n";
+					echo '			<a href="javascript:addWish(' . $wishes[$row]['category_id'] . ")\">Lägg&nbsp;till</a>\n";
 				}
 				echo "		</td>\n";
 				echo "	</tr>\n";
-				$last_category_id = $wishes[$row]["category_id"];
+				$last_category_id = $wishes[$row]['category_id'];
 			}
 			// show indication for reserved wishes?
-			$reservationCount = count($wishes[$row]["reservations"]);
-			$maxReservationCount = $wishes[$row]["max_reservation_count"];
+			$reservationCount = count($wishes[$row]['reservations']);
+			$maxReservationCount = $wishes[$row]['max_reservation_count'];
 			$isReserved = ($reservationCount > 0 && (!$myList || $listIsChildList || !$listIsLocked));
 			$isFullyReserved = ($isReserved && $reservationCount >= $maxReservationCount && $maxReservationCount != -1);
 			$canBeReserved = ($listIsLocked && !$isFullyReserved && ($maxReservationCount > 0
-					|| $maxReservationCount == -1 && array_search($_SESSION["user_id"], $wishes[$row]["reservations"]) === false));
-			$link = (strpos($wishes[$row]["link"], "http://") === FALSE && strpos($wishes[$row]["link"], "https://") === FALSE ? "http://" : "") . $wishes[$row]["link"];
+					|| $maxReservationCount == -1 && array_search($_SESSION['user_id'], $wishes[$row]['reservations']) === false));
+			$link = (strpos($wishes[$row]['link'], 'http://') === FALSE && strpos($wishes[$row]['link'], 'https://') === FALSE ? 'http://' : '') . $wishes[$row]['link'];
 			echo "	<tr onMouseOver=\"highlightRow(this);\" onMouseOut=\"dehighlightRow(this);\">\n";
 			echo "		<td width=\"5\">&nbsp;&nbsp;</td>\n";
 			echo "		<td class=\"list_row_left\">\n";
-			echo "			" . ($isFullyReserved ? "<span class=\"reserved_wish\">" : "") . $wishes[$row]["short_description"];
-			echo ($wishes[$row]["link"] != "" ? "\n			<br><a href=\"" . $link . "\" class=\"" . ($isFullyReserved ? "reserved_wish" : "wish") . "\" target=\"wish-link-"
-				. $wishes[$row]["wish_id"] . "\">" . $link . "</a>" : "");
-			echo ($isFullyReserved ? "</span>" : "") . "\n";
+			echo '			' . ($isFullyReserved ? '<span class="reserved_wish">' : '') . $wishes[$row]['short_description'];
+			echo ($wishes[$row]['link'] != '' ? "\n			<br><a href=\"" . $link . '" class="' . ($isFullyReserved ? 'reserved_wish' : 'wish') . '" target="wish-link-'
+				. $wishes[$row]['wish_id'] . '">' . $link . '</a>' : '');
+			echo ($isFullyReserved ? '</span>' : '') . "\n";
 			echo "		</td>\n";
 			echo "		<td class=\"list_row_center\" width=\"20\"></td>\n";
 			echo "		<td class=\"list_row_right\">\n";
 			if ($isReserved)
 			{
 				$showReservedInMyList = ($myList && !$listIsLocked);
-				echo "			<div id=\"reservation_" . $wishes[$row]["wish_id"] . "\" class=\"tooltip\">\n";
-				$reservedByUserIds = "";
-				foreach ($wishes[$row]["reservations"] as $reservedByUserId)
+				echo '			<div id="reservation_' . $wishes[$row]['wish_id'] . "\" class=\"tooltip\">\n";
+				$reservedByUserIds = '';
+				foreach ($wishes[$row]['reservations'] as $reservedByUserId)
 				{
-					$reservedByUserIds .= $reservedByUserId . ", ";
+					$reservedByUserIds .= $reservedByUserId . ', ';
 				}
-				$result = mysql_query("SELECT user_id, user_name FROM users WHERE user_id IN (" . trim($reservedByUserIds, ", ") . ")");
-				if (!$result)
+				try
 				{
-					die("Could not retrieve wish reserve information from database: " . mysql_error());
+					$result = dbExecute($connection, 'SELECT user_id, user_name FROM users WHERE user_id IN (' . trim($reservedByUserIds, ', ') . ')');
 				}
-				echo "				<table width=\"100%\">";
-				while ($dbRow = mysql_fetch_assoc($result))
+				catch (PDOException $ex)
 				{
-					echo "					<tr>";
+					die('Could not retrieve wish reserve information from database: ' . $ex->getMessage());
+				}
+				echo "				<table width=\"100%\">\n";
+				while ($dbRow = dbFetch($result))
+				{
+					echo "					<tr>\n";
 					if ($maxReservationCount != -1)
 					{
-						echo "						<td style=\"padding-right: 10px;\">";
-						echo "							" . substr_count($reservedByUserIds, $dbRow["user_id"]) . "&nbsp;st\n";
-						echo "						</td>";
+						echo "						<td style=\"padding-right: 10px;\">\n";
+						echo '							' . substr_count($reservedByUserIds, $dbRow->user_id) . "&nbsp;st\n";
+						echo "						</td>\n";
 					}
-					echo "						<td>";
-					echo "							" . $dbRow["user_name"] . "\n";
-					echo "						</td>";
-					echo "					</tr>";
+					echo "						<td>\n";
+					echo '							' . $dbRow->user_name . "\n";
+					echo "						</td>\n";
+					echo "					</tr>\n";
 				}
-				echo "				</table>";
+				echo "				</table>\n";
 				echo "			</div>\n";
-				echo "			<span class=\"tooltip_link\"" . ($printMode ? ""
-					: " onMouseOver=\"showTooltip(this, " . $wishes[$row]["wish_id"]	. ");\" onMouseOut=\"hideTooltip(" . $wishes[$row]["wish_id"] . ");\"")
-					. ">" . ($maxReservationCount > 1 ? $reservationCount . "&nbsp;av&nbsp;"
-					. $maxReservationCount . "&nbsp;reserverad" . ($showReservedInMyList ? "es" : ($reservationCount > 1 ? "e" : ""))
-					: "Reserverad" . ($showReservedInMyList ? "es" : "")) . "</span>"
-					. (!$printMode && $showReservedInMyList || $canBeReserved ? "" : "\n");
+				echo '			<span class="tooltip_link"' . ($printMode ? ''
+					: ' onMouseOver="showTooltip(this, ' . $wishes[$row]['wish_id']	. ');" onMouseOut="hideTooltip(' . $wishes[$row]['wish_id'] . ');"')
+					. '>' . ($maxReservationCount > 1 ? $reservationCount . '&nbsp;av&nbsp;'
+					. $maxReservationCount . '&nbsp;reserverad' . ($showReservedInMyList ? 'es' : ($reservationCount > 1 ? 'e' : ''))
+					: 'Reserverad' . ($showReservedInMyList ? 'es' : '')) . '</span>'
+					. (!$printMode && $showReservedInMyList || $canBeReserved ? '' : "\n");
 			}
 			elseif ($maxReservationCount > 0)
 			{
-				echo "			" . ($printMode ? "(" : "") . $maxReservationCount . "&nbsp;st" . ($printMode ? ")" : "");
+				echo '			' . ($printMode ? '(' : '') . $maxReservationCount . '&nbsp;st' . ($printMode ? ')' : '');
 			}
 			if (!$printMode)
 			{
-				if (!$listIsLocked || $_SESSION["user_is_super"])
+				if (!$listIsLocked || $_SESSION['user_is_super'])
 				{
 					if ($myList)
 					{
-						echo ($isReserved || $maxReservationCount > 0 ? "&nbsp;|&nbsp;" : "			");
-						echo "<a href=\"javascript:editWish(" . $wishes[$row]["wish_id"] . ")\">Ändra</a>&nbsp;|&nbsp;"
-							. "<a href=\"javascript:deleteWish(" . $wishes[$row]["wish_id"] . ")\">Ta&nbsp;bort</a>\n";
+						echo ($isReserved || $maxReservationCount > 0 ? '&nbsp;|&nbsp;' : '			');
+						echo '<a href="javascript:editWish(' . $wishes[$row]['wish_id'] . ')">Ändra</a>&nbsp;|&nbsp;'
+							. '<a href="javascript:deleteWish(' . $wishes[$row]['wish_id'] . ")\">Ta&nbsp;bort</a>\n";
 					}
 				}
 				if ($listIsLocked && (!$myList || $listIsChildList) && $canBeReserved)
 				{
-					echo ($maxReservationCount == -1 ? "" : "&nbsp;|&nbsp;")
-						. "<a href=\"javascript:reserveWish(" . $wishes[$row]["wish_id"] . ")\">Reservera</a>\n";
+					echo ($maxReservationCount == -1 ? '' : '&nbsp;|')
+						. '&nbsp;<a href="javascript:reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</a>\n";
 				}
 			}
 			echo "		</td>\n";
@@ -489,19 +509,19 @@ if (!$unauthorizedCall)
 		echo "<span class=\"print_date\">\n";
 		if ($listIsLocked)
 		{
-			echo "	Låst t.o.m. " . date("Y-m-d", $listLockedUntil) . "\n";
+			echo '	Låst t.o.m. ' . date('Y-m-d', $listLockedUntil) . "\n";
 		}
 		else
 		{
 			echo "	Listan är olåst och därför ej synlig för andra.\n";
 		}
 		echo "	<br>\n";
-		echo "	Utskriven " . date("Y-m-d H:i:s") . "\n";
+		echo '	Utskriven ' . date('Y-m-d H:i:s') . "\n";
 		echo "</span>\n";
 	}
 	else
 	{
-		echo "<a href=\"javascript:printList()\">Skriv&nbsp;ut</a>";
+		echo '<a href="javascript:printList()">Skriv&nbsp;ut</a>';
 		if ($myList)
 		{
 			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>\n";
@@ -516,7 +536,7 @@ if (!$unauthorizedCall)
 /*
 	foreach ($_SESSION as $key => $value)
 	{
-		echo $key . " = " . $value . "<br>";
+		echo $key . ' = ' . $value . '<br>';
 	}
 */
 ?>

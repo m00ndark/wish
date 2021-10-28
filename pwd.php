@@ -1,59 +1,66 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-// start session
+// ini_set('display_errors', '1');
+
 session_start();
 
-if (isset($_POST["action"]))
+if (isset($_POST['action']))
 {
 	// handle post back
 	define('_VALID_INCLUDE', TRUE);
-	include "handle_postback.php";
+	include 'handle_postback.php';
 }
 
 // include common functions
-include_once "common.php";
+include_once 'common.php';
 
 $pwdSavedSuccessfully = false;
 $editMode = false;
-$userId = "";
-if (isset($_GET["success"]))
+$userId = '';
+if (isset($_GET['success']))
 {
 	$pwdSavedSuccessfully = true;
 }
-else if (isset($_GET["userid"]))
+else if (isset($_GET['userid']))
 {
-	$userId = $_GET["userid"];
-	if (isset($_GET["code"]))
+	$userId = $_GET['userid'];
+	$connection = dbConnect();
+	if (isset($_GET['code']))
 	{
 		$editMode = true;
-		$recoveryCode = $_GET["code"];
-		$now = mktime(date("H"), date("i"), date("s"), date("n"), date("j"), date("Y"), 0); // now
-		$connection = dbConnect();
-		$result = mysql_query("SELECT user_id, user_name, UNIX_TIMESTAMP(recovery_valid_until) FROM users WHERE user_id = "
-			. $userId . " AND recovery_code = '" . $recoveryCode . "'");
-		if (!$result)
+		$recoveryCode = $_GET['code'];
+		$now = mktime(date('H'), date('i'), date('s'), date('n'), date('j'), date('Y')); // now
+		try
 		{
-			die("Could not retrieve password recovery information from database: " . mysql_error());
+			$result = dbExecute($connection,
+				'SELECT user_id, user_name, UNIX_TIMESTAMP(recovery_valid_until) recovery_valid_until_timestamp'
+					. ' FROM users WHERE user_id = :userId AND recovery_code = :recoveryCode',
+				[':userId' => $userId, ':recoveryCode' => $recoveryCode]);
+			$row = dbFetch($result);
 		}
-		$row = mysql_fetch_row($result);
-		dbDisconnect($connection);
-		$userName = $row[1];
-		$recoveryValidUntil = $row[2];
+		catch (PDOException $ex)
+		{
+			die('Could not retrieve password recovery information from database: ' . $ex->getMessage());
+		}
+		$userName = $row->user_name;
+		$recoveryValidUntil = $row->recovery_valid_until_timestamp;
 		$editModeAuthorized = ($now <= $recoveryValidUntil);
 	}
 	else
 	{
-		$connection = dbConnect();
-		$result = mysql_query("SELECT user_id, email FROM users WHERE user_id = " . $userId);
-		if (!$result)
+		try
 		{
-			die("Could not retrieve wish email from database: " . mysql_error());
+			$result = dbExecute($connection, 'SELECT user_id, email FROM users WHERE user_id = :userId', [':userId' => $userId]);
+			$row = dbFetch($result);
 		}
-		$row = mysql_fetch_row($result);
-		dbDisconnect($connection);
-		$email = $row[1];
+		catch (PDOException $ex)
+		{
+			die('Could not retrieve wish email from database: ' . $ex->getMessage());
+		}
+		$email = $row->email;
 	}
+	dbDisconnect($connection);
 }
 ?>
 
@@ -104,7 +111,7 @@ else if (isset($_GET["userid"]))
 		</script>
 		<title>Familjens Önskelista</title>
 	</head>
-	<body<?php if ($editModeAuthorized) { echo " onload=\"document.forms['pwd'].elements['password'].focus();\""; } ?>>
+	<body<?php if ($editModeAuthorized) { echo ' onload="document.forms[\'pwd\'].elements[\'password\'].focus();"'; } ?>>
 		<table class="main">
 			<tr>
 				<td class="header_back">
@@ -125,7 +132,7 @@ else if (isset($_GET["userid"]))
 								</h1>
 
 								<form name="pwd" method="post" action="pwd.php">
-									<input name="action" type="hidden" value="<?php echo ($editMode ? "edit" : "recover"); ?>">
+									<input name="action" type="hidden" value="<?php echo ($editMode ? 'edit' : 'recover'); ?>">
 									<br>
 <?php
 if ($pwdSavedSuccessfully)
@@ -137,7 +144,7 @@ if ($pwdSavedSuccessfully)
 									<br><br>
 <?php
 }
-else if (!$editMode && $userId == "")
+else if (!$editMode && $userId == '')
 {
 ?>
 									Välj ditt namn i listan och klicka därefter på länken för att skapa ett nytt lösenord.
@@ -159,15 +166,22 @@ else if (!$editMode && $userId == "")
 																<option value="-1"></option>
 <?php
 	$connection = dbConnect();
-	$result = mysql_query("SELECT user_id, user_name FROM users ORDER BY user_name ASC");
-	while ($row = mysql_fetch_assoc($result))
+	try
 	{
-		echo "<option value=\"" . $row["user_id"] . "\"";
-		if ($row["user_id"] == $userId)
+		$result = dbExecute($connection, 'SELECT user_id, user_name FROM users ORDER BY user_name ASC');
+		while ($row = dbFetch($result))
 		{
-			echo " selected=\"true\"";
+			echo '<option value="' . $row->user_id . '"';
+			if ($row->user_id == $userId)
+			{
+				echo ' selected="true"';
+			}
+			echo '>' . $row->user_name . "</option>\n";
 		}
-		echo ">" . $row["user_name"] . "</option>\n";
+	}
+	catch (PDOException $ex)
+	{
+		die('Could not retrieve user names from database: ' . $ex->getMessage());
 	}
 	dbDisconnect($connection);
 ?>
