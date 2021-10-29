@@ -16,15 +16,24 @@ function dbConnect()
 {
 	if (isset($_SESSION['environment']))
 	{
-		$dbName = 'wishlist_' . $_SESSION['environment'] . '_db';
+		$connectionFile = 'wish_connection_string_' . $_SESSION['environment'] . '.json';
 	}
 	else
 	{
-		$dbName = 'wishlist_db';
+		$connectionFile = 'wish_connection_string.json';
 	}
 	try
 	{
-		$connection = new PDO("mysql:host=127.0.0.1;dbname=$dbName;charset=utf8", 'wishlist', 'do-not-try-to-guess');
+		$connectionFileContent = file_get_contents("../$connectionFile");
+		$connectionInfo = json_decode($connectionFileContent);
+	}
+	catch (Exception $ex)
+	{
+		die('Could not load database connection information: ' . $ex->getMessage());
+	}
+	try
+	{
+		$connection = new PDO($connectionInfo->dsn, $connectionInfo->username, $connectionInfo->password);
 		$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		return $connection;
 	}
