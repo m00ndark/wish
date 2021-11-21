@@ -155,7 +155,7 @@ if ($postbackPage == 'pwd.php')
 		$emailAddress = $row->email;
 		$headers = "From: wish@m00ndark.com\r\nReply-To: mattias.wijkstrom@gmail.com";
 		$body = "För att ändra ditt lösenord på Familjens Önskelista, klicka på länken nedan:\r\n\r\n"
-			. "http://wish.m00ndark.com/v4/pwd.php?userid=$userId&code=$recoveryCode\r\n\r\n"
+			. "https://wish.m00ndark.com/pwd.php?userid=$userId&code=$recoveryCode\r\n\r\n"
 			. 'Denna länk är giltig (går att använda) till och med ' . date('Y-m-d H:i:s', $expireTime) . '.';
 		mail($emailAddress, 'Familjens Önskelista - nytt lösenord', $body, $headers);
 		$newLocation = $postbackPage . '?userid=' . $userId;
