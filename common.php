@@ -24,7 +24,7 @@ function dbConnect()
 	}
 	try
 	{
-		$connectionFileContent = file_get_contents("../../$connectionFile");
+		$connectionFileContent = file_get_contents(__DIR__ . "/../../$connectionFile");
 		$connectionInfo = json_decode($connectionFileContent);
 	}
 	catch (Exception $ex)

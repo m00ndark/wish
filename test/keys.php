@@ -1,22 +1,23 @@
-<!?php
+<?php
 header('Content-Type: text/html; charset=utf-8');
 
 ini_set('display_errors', '1');
 
 session_start();
 
-echo 'User ID : ' . $_SESSION['user_id'] . "\n";
-echo 'Super   : ' . $_SESSION['user_is_super'] . "\n";
+echo 'User ID : ' . $_SESSION['user_id'] . "<br>\n";
+echo 'Super   : ' . $_SESSION['user_is_super'] . "<br>\n";
+echo 'DIR     : ' . __DIR__ . "<br><br><br>\n";
 
 // if ()
 
 include_once "../common.php";
 
-$reservationIds = [];
-array_push($reservationIds, 160);
-$reservationIdParameters = makeDbParameters($reservationIds);
-print_r($reservationIds);
-print_r($reservationIdParameters);
+//$reservationIds = [];
+//array_push($reservationIds, 160);
+//$reservationIdParameters = makeDbParameters($reservationIds);
+//print_r($reservationIds);
+//print_r($reservationIdParameters);
 
 $connection = dbConnect();
 
@@ -57,20 +58,20 @@ try
 	// 		[':key' => encrypt($key), ':wishId' => $id]);
 	// }
 
-	echo "-----------------------\n";
+	echo "-----------------------<br><br>\n";
 
 	$result = dbExecute($connection, 'SELECT wish_id, reservation_key FROM wishes');
 	while ($row = dbFetch($result))
 	{
-		echo $row->wish_id . ' > ' . decrypt($row->reservation_key) . "\n";
+		echo $row->wish_id . ' > ' . decrypt($row->reservation_key) . "<br>\n";
 	}
 
-	echo "-----------------------\n";
+	echo "-----------------------<br><br>\n";
 
 	$result = dbExecute($connection, 'SELECT reservation_id, `key` FROM reservations');
 	while ($row = dbFetch($result))
 	{
-		echo $row->reservation_id . ' > ' . decrypt($row->key) . "\n";
+		echo $row->reservation_id . ' > ' . decrypt($row->key) . "<br>\n";
 	}
 }
 catch (PDOException $ex)
