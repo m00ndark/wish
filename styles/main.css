@@ -36,56 +36,56 @@ a.wish:link
 {
 	color: #CC0E00;
 	text-decoration: underline;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.wish:visited
 {
 	color: #CC0E00;
 	text-decoration: underline;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.wish:hover
 {
 	color: #CC0E00;
 	text-decoration: none;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.wish:active
 {
 	color: #CC0E00;
 	text-decoration: none;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.reserved_wish:link
 {
 	color: #F2C2BF;
 	text-decoration: underline;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.reserved_wish:visited
 {
 	color: #F2C2BF;
 	text-decoration: underline;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.reserved_wish:hover
 {
 	color: #F2C2BF;
 	text-decoration: none;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 a.reserved_wish:active
 {
 	color: #F2C2BF;
 	text-decoration: none;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 table
@@ -103,13 +103,13 @@ table.main
 td
 {
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 }
 
 td.small
 {
 	color: #666666;
-	font: 10px Georgia;
+	font: 0.625em Georgia;
 }
 
 td.back
@@ -139,7 +139,7 @@ td.content
 {
 	background-color: #FFFFFF;
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	width: 700px;
 }
 
@@ -150,7 +150,7 @@ td.list_header_left
 	border-color: #F1F1F1;
 	background-color: #FCF6F0;
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	padding-left: 0.2em;
 }
 
@@ -161,7 +161,7 @@ td.list_header_right
 	border-color: #F1F1F1;
 	background-color: #FCF6F0;
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	padding-right: 0.2em;
 	text-align: right;
 }
@@ -172,7 +172,7 @@ td.list_row_left
 	border-style: solid;
 	border-color: #F1F1F1;
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	padding-left: 0.2em;
 }
 
@@ -182,7 +182,7 @@ td.list_row_center
 	border-style: solid;
 	border-color: #F1F1F1;
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	padding-left: 0.2em;
 }
 
@@ -192,19 +192,19 @@ td.list_row_right
 	border-style: solid;
 	border-color: #F1F1F1;
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	padding-right: 0.2em;
 	text-align: right;
 }
 
 h1
 {
-	font: 18px Georgia;
+	font: 1.125em Georgia;
 }
 
 h2
 {
-	font: 12px Georgia;
+	font: 0.750em Georgia;
 	text-transform: uppercase;
 	border-bottom: 1px solid #666666;
 	margin: 2em 0 0.8em 0;
@@ -212,20 +212,20 @@ h2
 
 h3
 {
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 	margin: 0.2em 0 0.2em 0;
 }
 
 input
 {
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 }
 
 select
 {
 	color: #666666;
-	font: 13px Georgia;
+	font: 0.813em Georgia;
 }
 
 span.reserved_wish
