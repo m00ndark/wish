@@ -117,16 +117,13 @@ include_once 'common.php';
 			<input name="next_page_params" type="hidden" value="<?php echo (isset($_GET['page']) && isset($_GET['params']) ? urldecode($_GET['params']) : ''); ?>">
 
 			<div class="row header-row">
-				<div class="col-3"></div>
-				<div class="col-6 header">
+				<div class="col-center header">
 					Familjens Önskelista
 				</div>
-				<div class="col-3"></div>
 			</div>
 
 			<div class="row">
-				<div class="col-3"></div>
-				<div class="col-6 content">
+				<div class="col-center content">
 					<h1>
 						Välkommen till Familjens Önskelista!
 					</h1>
@@ -227,7 +224,6 @@ if (!$loginSuccess)
 						</div>
 					</div>
 				</div>
-				<div class="col-3"></div>
 			</div>
 
 		</form>
