@@ -34,6 +34,7 @@ include_once 'common.php';
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="theme-color" content="#2F2F2F">
 		<link rel="stylesheet" type="text/css" href="styles/main.css">
 		<script language="javascript">
 			function clearExistingUser()
