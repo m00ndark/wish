@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 // ini_set('display_errors', '1');
 
@@ -75,7 +78,9 @@ dbDisconnect($connection);
 
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="styles/<?php echo ($printMode ? 'print' : 'main'); ?>.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="theme-color" content="#2F2F2F"/>
+		<link rel="stylesheet" type="text/css" href="styles/<?php echo ($printMode ? 'print' : 'main'); ?>.css"/>
 		<script src="scripts/common.js" type="text/javascript"></script>
 		<script language="javascript">
 
@@ -189,22 +194,22 @@ dbDisconnect($connection);
 			<img id="loader" src="images/loader.gif">
 		</div>
 		<div id="dialog" style="display: none;"></div>
-		<table class="main">
-			<tr>
-				<td class="header_back">
-					<table>
-						<tr>
-							<td class="header"></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td class="back">
-					<table>
-						<tr>
-							<td class="content">
-								<h1>
+
+		<form name="modify_wish" method="post" action="list.php">
+			<input name="action" type="hidden" value="">
+			<input name="wishlist_id" type="hidden" value="<?php echo $listId; ?>">
+			<input name="wish_id" type="hidden" value="">
+		</form>
+
+		<div class="row header-row">
+				<div class="col-center header">
+					Familjens Önskelista
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-center content">
+					<h1>
 <?php
 if ($unauthorizedCall)
 {
@@ -243,7 +248,7 @@ else
 	}
 }
 ?>
-								</h1>
+					</h1>
 <?php
 if ($unauthorizedCall)
 {
@@ -254,7 +259,7 @@ else
 {
 	if (!$printMode)
 	{
-		echo "<br>\n";
+		echo "<p>\n";
 		if ($myList || $_SESSION['user_is_super'])
 		{
 			if (!$listIsLocked)
@@ -272,6 +277,7 @@ else
 			echo 'Listan är låst t.o.m. ' . date('Y-m-d', $listLockedUntil)
 				. ". Klicka på länkarna för att reservera en sak som du har köpt.\n";
 		}
+		echo "</p>\n";
 	}
 ?>
 								<table width="100%">

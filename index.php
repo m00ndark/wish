@@ -33,9 +33,9 @@ include_once 'common.php';
 ?>
 <html>
 	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="theme-color" content="#2F2F2F">
-		<link rel="stylesheet" type="text/css" href="styles/main.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="theme-color" content="#2F2F2F"/>
+		<link rel="stylesheet" type="text/css" href="styles/main.css"/>
 		<script language="javascript">
 			function clearExistingUser()
 			{
@@ -117,7 +117,7 @@ include_once 'common.php';
 			<input name="next_page" type="hidden" value="<?php echo (isset($_GET['page']) ? urldecode($_GET['page']) : 'home.php'); ?>">
 			<input name="next_page_params" type="hidden" value="<?php echo (isset($_GET['page']) && isset($_GET['params']) ? urldecode($_GET['params']) : ''); ?>">
 
-			<div class="row header-row">
+			<div class="row-header">
 				<div class="col-center header">
 					Familjens Önskelista
 				</div>
@@ -131,7 +131,7 @@ include_once 'common.php';
 					<p>
 						Har du varit här tidigare, välj ditt namn i listan.
 						Är det första gången du är här, ange då ditt namn i textfältet.
-						Ange även lösenord och klicka därefter på länken för att gå vidare.
+						Ange även lösenord och klicka därefter på länken för att logga in.
 					</p>
 					<p>
 						Om ditt namn finns med i listan men du har glömt ditt lösenord, klicka då <a href="pwd.php">här</a> för att skapa ett nytt.
@@ -143,7 +143,7 @@ include_once 'common.php';
 								Befintlig användare
 							</h2>
 						</div>
-						<div class="col-4"></div>
+						<div class="col-4 empty"></div>
 					</div>
 
 					<div class="row">
@@ -174,7 +174,7 @@ dbDisconnect($connection);
 ?>
 							</select>
 						</div>
-						<div class="col-4"></div>
+						<div class="col-4 empty"></div>
 					</div>
 
 					<div class="row">
@@ -182,7 +182,7 @@ dbDisconnect($connection);
 						<div class="col-4 right">
 							<input name="existing_user_password" type="password" onKeyPress="clearNewUser(); return checkEnter(event);">
 						</div>
-						<div class="col-4"></div>
+						<div class="col-4 empty"></div>
 					</div>
 
 <?php
@@ -203,7 +203,7 @@ if (!$loginSuccess)
 								Ny användare
 							</h2>
 						</div>
-						<div class="col-4"></div>
+						<div class="col-4 empty"></div>
 					</div>
 
 					<div class="row">
@@ -211,7 +211,7 @@ if (!$loginSuccess)
 						<div class="col-4 right">
 							<input name="new_user_name" type="text" onKeyPress="clearExistingUser(); return checkEnter(event);">
 						</div>
-						<div class="col-4"></div>
+						<div class="col-4 empty"></div>
 					</div>
 
 					<div class="row">
@@ -219,14 +219,13 @@ if (!$loginSuccess)
 						<div class="col-4 right">
 							<input name="new_user_password" type="password" onKeyPress="clearExistingUser(); return checkEnter(event);">
 						</div>
-						<div class="col-3"></div>
-						<div class="col-1" style="margin-top: 10px;">
-							<a href="javascript:login()">Vidare</a>
+						<div class="col-3 empty"></div>
+						<div class="col-1 right" style="margin-top: 10px;">
+							<a href="javascript:login()">Logga in</a>
 						</div>
 					</div>
 				</div>
 			</div>
-
 		</form>
 	</body>
 </html>
