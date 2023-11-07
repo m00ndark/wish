@@ -35,7 +35,7 @@ include_once 'common.php';
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<meta name="theme-color" content="#2F2F2F"/>
-		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<? echo time()?>"/>
+		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<?php echo time()?>"/>
 		<script language="javascript">
 			function clearExistingUser()
 			{
@@ -110,7 +110,7 @@ include_once 'common.php';
 		</script>
 		<title>Familjens Önskelista</title>
 	</head>
-	<body<?php if (!$loginSuccess) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
+	<body <?php if (!$loginSuccess) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
 		<form name="login" method="post" action="index.php">
 			<input name="action" type="hidden" value="">
 			<input name="existing_user_name" type="hidden" value="">
