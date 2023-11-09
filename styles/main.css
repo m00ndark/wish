@@ -65,6 +65,7 @@ body {
 	padding-bottom: 3px;
 }
 
+/* For mobile phones: */
 .row-list {
 	display: flex;
 	border-radius: 10px;
@@ -74,7 +75,9 @@ body {
 }
 
 @media only screen and (min-width: 1016px) {
+	/* For desktop: */
 	.row-list {
+		display: flex;
 		border-radius: 0px;
 		padding: 3px;
 		border: 0px;
@@ -89,8 +92,15 @@ body {
 
 .row-footer {
 	display: flex;
-	padding-top: 20px;
+	margin-top: 20px;
 	padding-bottom: 10px;
+}
+
+.auto-row {
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+	margin-bottom: 10px;
 }
 
 .header {
@@ -107,6 +117,25 @@ body {
 	padding: 15px;
 	background-color: white;
 	color: var(--text-color);
+}
+
+.dialog {
+	width: 90%;
+}
+
+@media only screen and (min-width: 702px) {
+	/* For desktop: */
+	.dialog {
+		width: 600px;
+	}
+}
+
+.input-label {
+	margin: 0px 0.625rem 0.188rem 0px;
+}
+
+.no-margin {
+	margin: 0px;
 }
 
 .empty {
@@ -161,120 +190,115 @@ p {
 
 
 
-a:link
-{
+a:link {
 	color: var(--theme-color);
 	text-decoration: none;
 }
 
-a:visited
-{
+a:visited {
 	color: var(--theme-color);
 	text-decoration: none;
 }
 
-a:hover
-{
+a:hover {
 	color: var(--theme-color);
 	text-decoration: underline;
 }
 
-a:active
-{
+a:active {
 	color: var(--theme-color);
 	text-decoration: underline;
 }
 
-a.wish:link
-{
+a.wish:link {
 	color: var(--theme-color);
 	text-decoration: none;
 	font: 10px Georgia;
 }
 
-a.wish:visited
-{
+a.wish:visited {
 	color: var(--theme-color);
 	text-decoration: none;
 	font: 10px Georgia;
 }
 
-a.wish:hover
-{
+a.wish:hover {
 	color: var(--theme-color);
 	text-decoration: underline;
 	font: 10px Georgia;
 }
 
-a.wish:active
-{
+a.wish:active {
 	color: var(--theme-color);
 	text-decoration: underline;
 	font: 10px Georgia;
 }
 
-a.reserved_wish:link
-{
+a.reserved_wish:link {
 	color: var(--light-theme-color);
 	text-decoration: underline;
 	font: 10px Georgia;
 }
 
-a.reserved_wish:visited
-{
+a.reserved_wish:visited {
 	color: var(--light-theme-color);
 	text-decoration: underline;
 	font: 10px Georgia;
 }
 
-a.reserved_wish:hover
-{
+a.reserved_wish:hover {
 	color: var(--light-theme-color);
 	text-decoration: none;
 	font: 10px Georgia;
 }
 
-a.reserved_wish:active
-{
+a.reserved_wish:active {
 	color: var(--light-theme-color);
 	text-decoration: none;
 	font: 10px Georgia;
 }
 
-input
-{
+form {
+	margin: 0px;
+}
+
+input {
+	color: var(--text-color);
+	font-size: 1rem;
+}
+
+input[type="text"],
+input[type="password"] {
+	width: 100%;
+}
+
+input[type="checkbox"] {
+	margin: 0px 0.438rem 0.375rem 0px;
+	accent-color: var(--theme-color);
+}
+
+select {
 	width: 100%;
 	color: var(--text-color);
 	font-size: 1rem;
 }
 
-select
-{
-	width: 100%;
-	color: var(--text-color);
-	font-size: 1rem;
-}
-
-span.reserved_wish
-{
+span.reserved_wish {
 	text-decoration: line-through;
 	color: #BBBBBB;
 }
 
-span.print_date
-{
+span.print_date {
 	font-size: 10px;
 }
 
-span.tooltip_link
-{
+span.tooltip_link {
 	color: #CC6C66;
 	cursor: pointer;
 	border-bottom: 1px dotted #CC6C66;
 }
 
-div.tooltip
-{
+div.tooltip {
 	position: absolute;
 	z-index: 50;
 	display: none;
@@ -284,8 +308,7 @@ div.tooltip
 	text-align: center;
 }
 
-#overlay
-{
+#overlay {
 	position: absolute;
 	z-index: 90;
 	top: 0px;
@@ -300,18 +323,17 @@ div.tooltip
 	opacity: .8;
 }
 
-#dialog
-{
+#dialog {
 	position: absolute;
 	z-index: 100;
-	padding: 20px;
-	border: 2px solid #BBBBBB;
-	background-color: #FFFFFF;
-	display: block;
+	border-radius: 15px;
+	padding: 15px;
+	border: 1px solid var(--bubble-frame-color);
+	background-color: white;
+	display: none;
 }
 
-#loader
-{
+#loader {
 	position: absolute;
 	z-index: 95;
 	display: none;

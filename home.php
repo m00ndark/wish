@@ -70,19 +70,9 @@ dbDisconnect($connection);
 		<meta name="theme-color" content="#2F2F2F"/>
 		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<?php echo time()?>"/>
 		<link rel="stylesheet" type="text/css" href="styles/calendar.css?timestamp=<?php echo time()?>"/>
-		<script src="scripts/common.js" type="text/javascript"></script>
-		<script src="scripts/calendar.js" type="text/javascript"></script>
+		<script src="scripts/common.js?timestamp=<?php echo time()?>" type="text/javascript"></script>
+		<script src="scripts/calendar.js?timestamp=<?php echo time()?>" type="text/javascript"></script>
 		<script language="javascript">
-
-			function highlightRow(row, modifyFirstChild)
-			{
-				row.style.backgroundColor = "#F6F6F6";
-			}
-
-			function dehighlightRow(row)
-			{
-				row.style.backgroundColor = "#FFFFFF";
-			}
 
 			function modifyList(actionType, listId)
 			{
@@ -93,12 +83,7 @@ dbDisconnect($connection);
 
 			function lockList(listId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("list_dialog.php?action=lock&listId=" + listId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("list_dialog.php?action=lock&listId=" + listId);
 			}
 
 			function deleteList(listId)
@@ -111,22 +96,12 @@ dbDisconnect($connection);
 
 			function editList(listId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("list_dialog.php?action=edit&listId=" + listId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("list_dialog.php?action=edit&listId=" + listId);
 			}
 
 			function addList()
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("list_dialog.php?action=add", "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("list_dialog.php?action=add")
 			}
 
 			function enableShareList()
@@ -221,9 +196,7 @@ dbDisconnect($connection);
 				{
 					A_TCALS["calendar"].f_hide();
 				}
-				document.getElementById("loader").style.display = "none";
-				document.getElementById("dialog").style.display = "none";
-				document.getElementById("overlay").style.display = "none";
+				closeDialog()
 			}
 
 		</script>
@@ -233,7 +206,7 @@ dbDisconnect($connection);
 		<div id="overlay">
 			<img id="loader" src="images/loader.gif">
 		</div>
-		<div id="dialog" style="display: none;"></div>
+		<div class="dialog" id="dialog"></div>
 
 		<form name="modify_list" method="post" action="home.php">
 			<input name="action" type="hidden" value="">
