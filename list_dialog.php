@@ -76,7 +76,7 @@ if ($actionIsLock)
 ?>
 	<div class="auto-row">
 		<div class="input-label">
-			Till och med:
+			Till&nbsp;och&nbsp;med:
 		</div>
 		<div>
 			<span class="small">ÅÅÅÅ-MM-DD</span>
@@ -118,7 +118,7 @@ if ($actionIsEdit && $userId != $_SESSION['user_id'])
 >
 		</div>
 		<div class="input-label">
-			<label for="is_shared">Gemensam lista med:</label>
+			<label for="is_shared">Gemensam&nbsp;lista&nbsp;med:</label>
 		</div>
 		<div class="auto-col">
 			<select name="shared_with_user_id"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION['user_id']) { echo ' disabled'; } ?>>
@@ -160,7 +160,7 @@ if ($isChildList == 1)
 >
 		</div>
 		<div class="input-label">
-			<label for="is_child">Barnlista tillhörande:</label>
+			<label for="is_child">Barnlista&nbsp;tillhörande:</label>
 		</div>
 		<div class="auto-col">
 			<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>"<?php if ($isChildList == 0) { echo ' disabled'; } ?>>
