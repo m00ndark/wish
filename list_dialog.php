@@ -96,10 +96,10 @@ else
 		<div class="input-label">
 			Titel:
 		</div>
-		<div>
+		<div class="auto-col">
 			<span class="small">Använd inte ditt eller ditt barns namn i listans titel.</span>
 			<br>
-			<input name="title" id="focus" type="text" value="<?php if ($actionIsEdit) { echo $title; } ?>" style="width: 300px">
+			<input name="title" id="focus" type="text" value="<?php if ($actionIsEdit) { echo $title; } ?>">
 		</div>
 	</div>
 	<div class="auto-row">
@@ -120,8 +120,8 @@ if ($actionIsEdit && $userId != $_SESSION['user_id'])
 		<div class="input-label">
 			<label for="is_shared">Gemensam lista med:</label>
 		</div>
-		<div>
-			<select name="shared_with_user_id" style="width: 150px"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION['user_id']) { echo ' disabled'; } ?>>
+		<div class="auto-col">
+			<select name="shared_with_user_id"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION['user_id']) { echo ' disabled'; } ?>>
 				<option value="-1"></option>
 <?php
 $connection = dbConnect();
@@ -160,10 +160,10 @@ if ($isChildList == 1)
 >
 		</div>
 		<div class="input-label">
-			<label for="is_child">Barnönskelista tillhörande:</label>
+			<label for="is_child">Barnlista tillhörande:</label>
 		</div>
-		<div>
-			<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>" style="width: 150px"<?php if ($isChildList == 0) { echo ' disabled'; } ?>>
+		<div class="auto-col">
+			<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>"<?php if ($isChildList == 0) { echo ' disabled'; } ?>>
 		</div>
 	</div>
 <?php
