@@ -80,20 +80,9 @@ dbDisconnect($connection);
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<meta name="theme-color" content="#2F2F2F"/>
-		<link rel="stylesheet" type="text/css" href="styles/<?php echo ($printMode ? 'print' : 'main'); ?>.css"/>
-		<script src="scripts/common.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="styles/<?php echo ($printMode ? 'print' : 'main'); ?>.css?timestamp=<?php echo time()?>"/>
+		<script src="scripts/common.js?timestamp=<?php echo time()?>" type="text/javascript"></script>
 		<script language="javascript">
-
-			function highlightRow(row)
-			{
-				row.style.backgroundColor = "#F6F6F6";
-				row.cells[0].style.backgroundColor = "#FFFFFF";
-			}
-
-			function dehighlightRow(row)
-			{
-				row.style.backgroundColor = "#FFFFFF";
-			}
 
 			function showTooltip(tooltipLink, wishId)
 			{
@@ -117,12 +106,7 @@ dbDisconnect($connection);
 
 			function reserveWish(wishId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("wish_dialog.php?action=reserve&listId=<?php echo $listId; ?>&wishId=" + wishId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("wish_dialog.php?action=reserve&listId=<?php echo $listId; ?>&wishId=" + wishId);
 			}
 
 			function deleteWish(wishId)
@@ -135,22 +119,12 @@ dbDisconnect($connection);
 
 			function editWish(wishId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("wish_dialog.php?action=edit&listId=<?php echo $listId; ?>&wishId=" + wishId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("wish_dialog.php?action=edit&listId=<?php echo $listId; ?>&wishId=" + wishId);
 			}
 
 			function addWish(categoryId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("wish_dialog.php?action=add&listId=<?php echo $listId; ?>&categoryId=" + categoryId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("wish_dialog.php?action=add&listId=<?php echo $listId; ?>&categoryId=" + categoryId);
 			}
 
 			function printList()
@@ -182,8 +156,7 @@ dbDisconnect($connection);
 
 			function cancelDialog()
 			{
-				document.getElementById("dialog").style.display = "none";
-				document.getElementById("overlay").style.display = "none";
+				closeDialog();
 			}
 
 		</script>
@@ -193,7 +166,7 @@ dbDisconnect($connection);
 		<div id="overlay">
 			<img id="loader" src="images/loader.gif">
 		</div>
-		<div id="dialog" style="display: none;"></div>
+		<div class="dialog" id="dialog"></div>
 
 		<form name="modify_wish" method="post" action="list.php">
 			<input name="action" type="hidden" value="">
@@ -201,15 +174,17 @@ dbDisconnect($connection);
 			<input name="wish_id" type="hidden" value="">
 		</form>
 
-		<div class="row header-row">
-				<div class="col-center header">
-					Familjens Önskelista
-				</div>
+		<div class="row-header">
+			<div class="col-center header">
+				Familjens Önskelista
 			</div>
+		</div>
 
-			<div class="row">
-				<div class="col-center content">
-					<h1>
+		<div class="row">
+			<div class="col-center content">
+				<div class="row">
+					<div class="col-9">
+						<h1>
 <?php
 if ($unauthorizedCall)
 {
@@ -248,11 +223,11 @@ else
 	}
 }
 ?>
-					</h1>
+						</h1>
 <?php
 if ($unauthorizedCall)
 {
-	echo "Den efterfrågade listan är inte tillgänglig.\n";
+	echo "<p>Den efterfrågade listan är inte tillgänglig.</p>\n";
 	echo "<br><br><br>\n";
 }
 else
@@ -280,12 +255,10 @@ else
 		echo "</p>\n";
 	}
 ?>
-								<table width="100%">
-									<tr>
-										<td align="right">
+					</div>
+					<div class="col-3 right">
+						<p>
 <?php
-if (!$unauthorizedCall)
-{
 	if (!$printMode)
 	{
 		echo '<a href="javascript:printList()">Skriv&nbsp;ut</a>';
@@ -294,26 +267,19 @@ if (!$unauthorizedCall)
 			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>\n";
 		}
 	}
-}
 ?>
-										</td>
-									</tr>
-								</table>
-								<table width="100%">
-									<form name="modify_wish" method="post" action="list.php">
-										<input name="action" type="hidden" value="">
-										<input name="wishlist_id" type="hidden" value="<?php echo $listId; ?>">
-										<input name="wish_id" type="hidden" value="">
-									</form>
-									<tr>
-										<td>
-											<h2>
+						</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<h2 class="list">
 <?php
 	echo $listTitle . "\n";
 ?>
-											</h2>
-											<table width="100%">
-												<tr><td height="9"></td></tr>
+						</h2>
+					</div>
+				</div>
 <?php
 	$connection = dbConnect();
 	$wishes = [];
@@ -370,24 +336,18 @@ if (!$unauthorizedCall)
 		{
 			if ($wishes[$row]['category_id'] != $last_category_id)
 			{
-				if ($last_category_id != -1)
-				{
-					echo "	<tr>\n";
-					echo "		<td height=\"20\"></td>\n";
-					echo "	</tr>\n";
-				}
-				echo "	<tr>\n";
-				echo "		<td class=\"list_header_left\" colspan=\"3\">\n";
+				echo "	<div class=\"row-category\"" . ($last_category_id < 0 ? " style=\"margin-top: 5px;\"" : "") . ">\n";
+				echo "		<div class=\"auto-col\">\n";
 				echo '			<a name="category-' . $wishes[$row]['category_id'] . "\"></a>\n";
-				echo '			<h3>' . $wishes[$row]['name'] . "</h3>\n";
-				echo "		</td>\n";
-				echo "		<td class=\"list_header_right\">\n";
+				echo '			<h4>' . $wishes[$row]['name'] . "</h4>\n";
+				echo "		</div>\n";
+				echo "		<div class=\"auto-col right\">\n";
 				if (!$printMode && $myList)
 				{
 					echo '			<a href="javascript:addWish(' . $wishes[$row]['category_id'] . ")\">Lägg&nbsp;till</a>\n";
 				}
-				echo "		</td>\n";
-				echo "	</tr>\n";
+				echo "		</div>\n";
+				echo "	</div>\n";
 				$last_category_id = $wishes[$row]['category_id'];
 			}
 			// show indication for reserved wishes?
@@ -398,16 +358,15 @@ if (!$unauthorizedCall)
 			$canBeReserved = ($listIsLocked && !$isFullyReserved && ($maxReservationCount > 0
 					|| $maxReservationCount == -1 && array_search($_SESSION['user_id'], $wishes[$row]['reservations']) === false));
 			$link = (strpos($wishes[$row]['link'], 'http://') === FALSE && strpos($wishes[$row]['link'], 'https://') === FALSE ? 'http://' : '') . $wishes[$row]['link'];
-			echo "	<tr onMouseOver=\"highlightRow(this);\" onMouseOut=\"dehighlightRow(this);\">\n";
-			echo "		<td width=\"5\">&nbsp;&nbsp;</td>\n";
-			echo "		<td class=\"list_row_left\">\n";
+			echo "	<div class=\"row-list hover\">\n";
+			echo "		<div class=\"auto-col\">\n";
 			echo '			' . ($isFullyReserved ? '<span class="reserved_wish">' : '') . $wishes[$row]['short_description'];
+			echo ($isFullyReserved ? '</span><span class="reserved_wish_link">' : "");
 			echo ($wishes[$row]['link'] != '' ? "\n			<br><a href=\"" . $link . '" class="' . ($isFullyReserved ? 'reserved_wish' : 'wish') . '" target="wish-link-'
 				. $wishes[$row]['wish_id'] . '">' . $link . '</a>' : '');
 			echo ($isFullyReserved ? '</span>' : '') . "\n";
-			echo "		</td>\n";
-			echo "		<td class=\"list_row_center\" width=\"20\"></td>\n";
-			echo "		<td class=\"list_row_right\">\n";
+			echo "		</div>\n";
+			echo "		<div class=\"auto-col right\">\n";
 			if ($isReserved)
 			{
 				$showReservedInMyList = ($myList && !$listIsLocked);
@@ -470,43 +429,31 @@ if (!$unauthorizedCall)
 						. '&nbsp;<a href="javascript:reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</a>\n";
 				}
 			}
-			echo "		</td>\n";
-			echo "	</tr>\n";
+			echo "		</div>\n";
+			echo "	</div>\n";
 		}
 	}
 	else
 	{
-		echo "	<tr>\n";
-		echo "		<td class=\"small\">\n";
+		echo "	<div class=\"row\">\n";
+		echo "		<div class=\"col-12 small\">\n";
 		echo "			(det finns inga önskningar i denna lista)\n";
-		echo "		</td>\n";
-		echo "	</tr>\n";
+		echo "		</div>\n";
+		echo "	</div>\n";
 	}
 	dbDisconnect($connection);
+} // $unauthorizedCall - else
 ?>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<br><br>
-<?php
-} // $unauthorizedCall
-if (!$printMode)
-{
-	echo "<br>\n";
-}
-?>
-								<table width="100%">
-									<tr>
-										<td>
+				<div class="row-footer">
+					<div class="auto-col">
 <?php
 if (!$printMode)
 {
 	echo "<a href=\"home.php\">Tillbaka</a>\n";
 }
 ?>
-										</td>
-										<td align="right">
+					</div>
+					<div class="auto-col right">
 <?php
 if (!$unauthorizedCall)
 {
@@ -535,9 +482,8 @@ if (!$unauthorizedCall)
 	}
 }
 ?>
-										</td>
-									</tr>
-								</table>
+					</div>
+				</div>
 <?php
 /*
 	foreach ($_SESSION as $key => $value)
@@ -546,11 +492,7 @@ if (!$unauthorizedCall)
 	}
 */
 ?>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+			</div>
+		</div>
 	</body>
 </html>

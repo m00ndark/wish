@@ -6,6 +6,7 @@
 	--theme-color: #CC0E00;
 	--light-theme-color: #F2C2BF;
 	--text-color: #666666;
+	--light-text-color: #BBBBBB;
 	--bubble-frame-color: #BBBBBB;
 	--hover-back-color: #F6F6F6;
 }
@@ -53,6 +54,7 @@ body {
 	float: left;
 	padding: 0px;
 	flex-grow: 1;
+	align-items: flex-start;
 }
 
 [class*="row"]::after {
@@ -63,6 +65,15 @@ body {
 
 .row {
 	padding-bottom: 3px;
+}
+
+.row-category {
+	display: flex;
+	border-radius: 10px;
+	padding: 10px;
+	border: 1px solid var(--bubble-frame-color);
+	background: var(--hover-back-color);
+	margin: 20px 5px 5px 5px;
 }
 
 /* For mobile phones: */
@@ -78,10 +89,10 @@ body {
 	/* For desktop: */
 	.row-list {
 		display: flex;
-		border-radius: 0px;
-		padding: 3px;
+		border-radius: 10px;
+		padding: 5px 10px 5px 10px;
 		border: 0px;
-		margin: 0px;
+		margin: 0px 5px 0px 5px;
 	}
 }
 
@@ -159,7 +170,7 @@ body {
 }
 
 .small {
-	font-size: 0.625rem;
+	font-size: 0.75rem;
 }
 
 h1 {
@@ -173,9 +184,25 @@ h2 {
 	margin: 32px 0px 12px 0px;
 }
 
+h2.list {
+	margin: 12px 0px 12px 0px;
+}
+
+@media only screen and (min-width: 1016px) {
+	/* For desktop: */
+	h2.list {
+		margin: 32px 0px 12px 0px;
+	}
+}
+
 h3 {
 	font-size: 0.9rem;
 	margin: 0px 0px 12px 0px;
+}
+
+h4 {
+	font-size: 0.9rem;
+	margin: 0px;
 }
 
 p {
@@ -213,49 +240,49 @@ a:active {
 a.wish:link {
 	color: var(--theme-color);
 	text-decoration: none;
-	font: 10px Georgia;
+	font-size: 0.75rem;
 }
 
 a.wish:visited {
 	color: var(--theme-color);
 	text-decoration: none;
-	font: 10px Georgia;
+	font-size: 0.75rem;
 }
 
 a.wish:hover {
 	color: var(--theme-color);
 	text-decoration: underline;
-	font: 10px Georgia;
+	font-size: 0.75rem;
 }
 
 a.wish:active {
 	color: var(--theme-color);
 	text-decoration: underline;
-	font: 10px Georgia;
+	font-size: 0.75rem;
 }
 
 a.reserved_wish:link {
 	color: var(--light-theme-color);
-	text-decoration: underline;
-	font: 10px Georgia;
+	text-decoration: none;
+	font-size: 0.75rem;
 }
 
 a.reserved_wish:visited {
 	color: var(--light-theme-color);
-	text-decoration: underline;
-	font: 10px Georgia;
+	text-decoration: none;
+	font-size: 0.75rem;
 }
 
 a.reserved_wish:hover {
 	color: var(--light-theme-color);
-	text-decoration: none;
-	font: 10px Georgia;
+	text-decoration: underline;
+	font-size: 0.75rem;
 }
 
 a.reserved_wish:active {
 	color: var(--light-theme-color);
-	text-decoration: none;
-	font: 10px Georgia;
+	text-decoration: underline;
+	font-size: 0.75rem;
 }
 
 form {
@@ -286,7 +313,12 @@ select {
 
 span.reserved_wish {
 	text-decoration: line-through;
-	color: #BBBBBB;
+	color: var(--light-text-color);
+}
+
+span.reserved_wish_link {
+	text-decoration: line-through;
+	color: var(--light-theme-color);
 }
 
 span.print_date {

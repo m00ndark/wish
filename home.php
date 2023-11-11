@@ -196,7 +196,7 @@ dbDisconnect($connection);
 				{
 					A_TCALS["calendar"].f_hide();
 				}
-				closeDialog()
+				closeDialog();
 			}
 
 		</script>
