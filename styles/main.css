@@ -57,6 +57,22 @@ body {
 	align-items: flex-start;
 }
 
+.wish-left-col {
+	padding: 0px;
+	align-items: flex-start;
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+.wish-right-col {
+	float: left;
+	padding: 0px 0px 0px 15px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	flex-grow: 1;
+}
+
 [class*="row"]::after {
 	content: "";
 	clear: both;

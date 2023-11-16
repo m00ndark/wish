@@ -359,14 +359,14 @@ else
 					|| $maxReservationCount == -1 && array_search($_SESSION['user_id'], $wishes[$row]['reservations']) === false));
 			$link = (strpos($wishes[$row]['link'], 'http://') === FALSE && strpos($wishes[$row]['link'], 'https://') === FALSE ? 'http://' : '') . $wishes[$row]['link'];
 			echo "	<div class=\"row-list hover\">\n";
-			echo "		<div class=\"auto-col\">\n";
+			echo "		<div class=\"wish-left-col\">\n";
 			echo '			' . ($isFullyReserved ? '<span class="reserved_wish">' : '') . $wishes[$row]['short_description'];
 			echo ($isFullyReserved ? '</span><span class="reserved_wish_link">' : "");
 			echo ($wishes[$row]['link'] != '' ? "\n			<br><a href=\"" . $link . '" class="' . ($isFullyReserved ? 'reserved_wish' : 'wish') . '" target="wish-link-'
 				. $wishes[$row]['wish_id'] . '">' . $link . '</a>' : '');
 			echo ($isFullyReserved ? '</span>' : '') . "\n";
 			echo "		</div>\n";
-			echo "		<div class=\"auto-col right\">\n";
+			echo "		<div class=\"wish-right-col\">\n";
 			if ($isReserved)
 			{
 				$showReservedInMyList = ($myList && !$listIsLocked);
