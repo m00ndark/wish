@@ -425,7 +425,7 @@ else
 				}
 				if ($listIsLocked && (!$myList || $listIsChildList) && $canBeReserved)
 				{
-					echo ($maxReservationCount == -1 ? '' : '&nbsp;|')
+					echo ($maxReservationCount == -1 && $reservationCount == 0 ? '' : '&nbsp;|')
 						. '&nbsp;<a href="javascript:reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</a>\n";
 				}
 			}

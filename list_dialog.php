@@ -175,17 +175,18 @@ if ($isChildList == 1)
 <?php
 if ($actionIsEdit)
 {
-	echo 'Ändra</a>';
+	echo 'Ändra';
 }
 elseif ($actionIsLock)
 {
-	echo 'Lås</a>';
+	echo 'Lås';
 }
 else
 {
-	echo 'Lägg&nbsp;till</a>';
+	echo 'Lägg&nbsp;till';
 }
 ?>
+			</a>
 		</div>
 		<div class="auto-col right">
 			<a href="javascript:cancelDialog()">Avbryt</a>
