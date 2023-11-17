@@ -137,10 +137,6 @@ body {
 	align-items: end;
 }
 
-/* [class*="cell"] {
-	margin-bottom: 10px;
-} */
-
 .cell-category {
 	grid-row: 1 / 2;
 	grid-column: 1 / 2;
@@ -308,14 +304,6 @@ h4 {
 p {
 	margin: 16px 0px 0px 0px;
 }
-
-.tmp {
-	background: #87a1e9;
-}
-
-
-
-
 
 a:link {
 	color: var(--theme-color);

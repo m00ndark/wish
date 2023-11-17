@@ -257,18 +257,17 @@ else
 ?>
 					</div>
 					<div class="col-3 right">
-						<p>
 <?php
 	if (!$printMode)
 	{
-		echo '<a href="javascript:printList()">Skriv&nbsp;ut</a>';
+		echo '<p><a href="javascript:printList()">Skriv&nbsp;ut</a>';
 		if ($myList)
 		{
-			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>\n";
+			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>";
 		}
+		echo "<p>\n";
 	}
 ?>
-						</p>
 					</div>
 				</div>
 				<div class="row">
