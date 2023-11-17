@@ -359,9 +359,9 @@ else
 			$link = (strpos($wishes[$row]['link'], 'http://') === FALSE && strpos($wishes[$row]['link'], 'https://') === FALSE ? 'http://' : '') . $wishes[$row]['link'];
 			echo "	<div class=\"row-list hover\">\n";
 			echo "		<div class=\"wish-left-col\">\n";
-			echo '			' . ($isFullyReserved ? '<span class="reserved_wish">' : '') . $wishes[$row]['short_description'];
-			echo ($isFullyReserved ? '</span><span class="reserved_wish_link">' : "");
-			echo ($wishes[$row]['link'] != '' ? "\n			<br><a href=\"" . $link . '" class="' . ($isFullyReserved ? 'reserved_wish' : 'wish') . '" target="wish-link-'
+			echo '			' . ($isFullyReserved ? '<span class="reserved-wish">' : '') . $wishes[$row]['short_description'];
+			echo ($isFullyReserved ? '</span><span class="reserved-wish-link">' : "");
+			echo ($wishes[$row]['link'] != '' ? "\n			<br><a href=\"" . $link . '" class="' . ($isFullyReserved ? 'reserved-wish' : 'wish') . '" target="wish-link-'
 				. $wishes[$row]['wish_id'] . '">' . $link . '</a>' : '');
 			echo ($isFullyReserved ? '</span>' : '') . "\n";
 			echo "		</div>\n";
@@ -400,7 +400,7 @@ else
 				}
 				echo "				</table>\n";
 				echo "			</div>\n";
-				echo '			<span class="tooltip_link"' . ($printMode ? ''
+				echo '			<span class="tooltip-link"' . ($printMode ? ''
 					: ' onMouseOver="showTooltip(this, ' . $wishes[$row]['wish_id']	. ');" onMouseOut="hideTooltip(' . $wishes[$row]['wish_id'] . ');"')
 					. '>' . ($maxReservationCount > 1 ? $reservationCount . '&nbsp;av&nbsp;'
 					. $maxReservationCount . '&nbsp;reserverad' . ($showReservedInMyList ? 'es' : ($reservationCount > 1 ? 'e' : ''))
@@ -458,7 +458,7 @@ if (!$unauthorizedCall)
 {
 	if ($printMode)
 	{
-		echo "<span class=\"print_date\">\n";
+		echo "<span class=\"print-date\">\n";
 		if ($listIsLocked)
 		{
 			echo '	Låst t.o.m. ' . date('Y-m-d', $listLockedUntil) . "\n";

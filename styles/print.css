@@ -344,25 +344,25 @@ a.wish:active {
 	font-size: 0.75rem;
 }
 
-a.reserved_wish:link {
+a.reserved-wish:link {
 	color: var(--light-theme-color);
 	text-decoration: none;
 	font-size: 0.75rem;
 }
 
-a.reserved_wish:visited {
+a.reserved-wish:visited {
 	color: var(--light-theme-color);
 	text-decoration: none;
 	font-size: 0.75rem;
 }
 
-a.reserved_wish:hover {
+a.reserved-wish:hover {
 	color: var(--light-theme-color);
 	text-decoration: underline;
 	font-size: 0.75rem;
 }
 
-a.reserved_wish:active {
+a.reserved-wish:active {
 	color: var(--light-theme-color);
 	text-decoration: underline;
 	font-size: 0.75rem;
@@ -394,23 +394,23 @@ select {
 	font-size: 1rem;
 }
 
-span.reserved_wish {
+span.reserved-wish {
 	text-decoration: line-through;
 	color: var(--light-text-color);
 }
 
-span.reserved_wish_link {
+span.reserved-wish-link {
 	text-decoration: line-through;
 	color: var(--light-theme-color);
 }
 
-span.print_date
+span.print-date
 {
 	font-size: 10px;
 	text-align: right;
 }
 
-span.tooltip_link
+span.tooltip-link
 {
 	color: #000000;
 }
