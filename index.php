@@ -180,7 +180,7 @@ dbDisconnect($connection);
 					<div class="row">
 						<div class="col-4">Lösenord:</div>
 						<div class="col-4 right">
-							<input name="existing_user_password" type="password" onKeyPress="clearNewUser(); return checkEnter(event);">
+							<input name="existing_user_password" type="password" enterkeyhint="go" onKeyPress="clearNewUser(); return checkEnter(event);">
 						</div>
 						<div class="col-4 empty"></div>
 					</div>
@@ -217,7 +217,7 @@ if (!$loginSuccess)
 					<div class="row">
 						<div class="col-4">Lösenord:</div>
 						<div class="col-4 right">
-							<input name="new_user_password" type="password" onKeyPress="clearExistingUser(); return checkEnter(event);">
+							<input name="new_user_password" type="password" enterkeyhint="go" onKeyPress="clearExistingUser(); return checkEnter(event);">
 						</div>
 						<div class="col-3 empty"></div>
 						<div class="col-1 right" style="margin-top: 10px;">
