@@ -13,6 +13,7 @@
 
 html {
 	font-family: "WF Visual Sans Text", sans-serif;
+	font-size: 0.875rem;
 }
 
 body {
@@ -83,20 +84,23 @@ body {
 
 .row-category {
 	display: flex;
-	border-radius: 10px;
-	padding: 10px;
-	border: 1px solid var(--bubble-frame-color);
+	border-radius: 5px;
+	padding: 5px;
+	border-width: 0px 0px 1px 0px;
+	border-color: var(--bubble-frame-color);
+	border-style: solid;
 	background: var(--hover-back-color);
-	margin: 20px 5px 5px 5px;
+	margin: 10px 5px 2px 5px;
 }
 
 /* For mobile phones: */
 .row-list {
 	display: flex;
-	border-radius: 10px;
-	padding: 10px;
-	border: 1px solid var(--bubble-frame-color);
-	margin: 5px;
+	padding: 0px 5px 2px 5px;
+	border-width: 0px 0px 1px 0px;
+	border-color: var(--bubble-frame-color);
+	border-style: solid;
+	margin: 2px 5px 2px 5px;
 }
 
 @media only screen and (min-width: 1016px) {
@@ -261,7 +265,7 @@ body {
 }
 
 .small {
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 h1 {
@@ -323,49 +327,49 @@ a:active {
 a.wish:link {
 	color: var(--theme-color);
 	text-decoration: none;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.wish:visited {
 	color: var(--theme-color);
 	text-decoration: none;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.wish:hover {
 	color: var(--theme-color);
 	text-decoration: underline;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.wish:active {
 	color: var(--theme-color);
 	text-decoration: underline;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.reserved-wish:link {
 	color: var(--light-theme-color);
 	text-decoration: none;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.reserved-wish:visited {
 	color: var(--light-theme-color);
 	text-decoration: none;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.reserved-wish:hover {
 	color: var(--light-theme-color);
 	text-decoration: underline;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 a.reserved-wish:active {
 	color: var(--light-theme-color);
 	text-decoration: underline;
-	font-size: 0.75rem;
+	font-size: 0.625rem;
 }
 
 form {
@@ -406,7 +410,7 @@ span.reserved-wish-link {
 
 span.print-date
 {
-	font-size: 10px;
+	font-size: 0.625rem;
 	text-align: right;
 }
 
