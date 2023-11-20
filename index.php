@@ -35,7 +35,7 @@ include_once 'common.php';
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<meta name="theme-color" content="#2F2F2F"/>
-		<link rel="icon" type="image/x-icon" href="images/favicon.ico?timestamp=<?php echo time()?>">
+		<link rel="icon" type="image/png" href="images/favicon.png?timestamp=<?php echo time()?>">
 		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<?php echo time()?>"/>
 		<script language="javascript">
 			function clearExistingUser()
