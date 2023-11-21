@@ -7,6 +7,7 @@ define('SALT_LENGTH', 16);
 define('ENCRYPTION_CIPHER', 'aes-128-ctr');
 define('ENCRYPTION_KEY', 'my-wish-is-your-wish');
 
+date_default_timezone_set('Europe/Stockholm');
 
 // ***************************************************************
 // ******** FUNCTIONS ********************************************

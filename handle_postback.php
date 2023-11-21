@@ -194,7 +194,7 @@ elseif ($postbackPage == 'home.php')
 			// ***** ACTION : log out
 			$_SESSION = [];
 			session_destroy();
-			$newLocation = '/';
+			$newLocation = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')) . '/';
 		}
 	}
 	else
