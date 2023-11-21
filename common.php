@@ -25,7 +25,11 @@ function dbConnect()
 	}
 	try
 	{
-		$connectionFileContent = file_get_contents(__DIR__ . "/../../../$connectionFile");
+		$connectionFilePath = __DIR__ . "/../../$connectionFile";
+		$connectionFilePath = file_exists($connectionFilePath)
+			? $connectionFilePath : __DIR__ . "/../../../$connectionFile";
+			
+		$connectionFileContent = file_get_contents($connectionFilePath);
 		$connectionInfo = json_decode($connectionFileContent);
 	}
 	catch (Exception $ex)
