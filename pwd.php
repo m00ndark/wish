@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 // ini_set('display_errors', '1');
 
@@ -66,7 +69,10 @@ else if (isset($_GET['userid']))
 
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="styles/main.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="theme-color" content="#2F2F2F"/>
+		<link rel="icon" type="image/png" href="images/favicon.png?timestamp=<?php echo time()?>">
+		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<?php echo time()?>"/>
 		<script language="javascript">
 			function checkEnter(e)
 			{
@@ -112,58 +118,54 @@ else if (isset($_GET['userid']))
 		<title>Familjens Önskelista</title>
 	</head>
 	<body<?php if ($editModeAuthorized) { echo ' onload="document.forms[\'pwd\'].elements[\'password\'].focus();"'; } ?>>
-		<table class="main">
-			<tr>
-				<td class="header_back">
-					<table>
-						<tr>
-							<td class="header"></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td class="back">
-					<table>
-						<tr>
-							<td class="content">
-								<h1>
-									Skapa nytt lösenord
-								</h1>
+		<form name="pwd" method="post" action="pwd.php">
+			<input name="action" type="hidden" value="<?php echo ($editMode ? 'edit' : 'recover'); ?>">
 
-								<form name="pwd" method="post" action="pwd.php">
-									<input name="action" type="hidden" value="<?php echo ($editMode ? 'edit' : 'recover'); ?>">
-									<br>
+			<div class="row-header">
+				<div class="col-center header">
+					Familjens Önskelista
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-center content">
+					<h1>
+						Skapa nytt lösenord
+					</h1>
 <?php
 if ($pwdSavedSuccessfully)
 {
 ?>
-									Ditt nya lösenord är nu sparat. Vänligen klicka <a href="/">här</a> för att logga in.
-									<br><br>
-									<br><br>
-									<br><br>
+					<p>
+						Ditt nya lösenord är nu sparat. Vänligen klicka <a href="/">här</a> för att logga in.
+					</p>
+					<br><br>
+					<br><br>
+					<br><br>
 <?php
 }
 else if (!$editMode && $userId == '')
 {
 ?>
-									Välj ditt namn i listan och klicka därefter på länken för att skapa ett nytt lösenord.
-									Du kommer få ett mail skickat till din e-postadress med vidare instruktioner.
-									<br><br>
-									<table width="100%">
-										<tr>
-											<td width="50%">
-												<h2>
-													Befintlig användare
-												</h2>
-												<table width="100%">
-													<tr>
-														<td>
-															Namn:
-														</td>
-														<td align="right">
-															<select name="existing_user" style="width: 150px">
-																<option value="-1"></option>
+					<p>
+						Välj ditt namn i listan och klicka därefter på länken för att skapa ett nytt lösenord.
+						Du kommer få ett mail skickat till din e-postadress med vidare instruktioner.
+					</p>
+
+					<div class="row">
+						<div class="col-8">
+							<h2>
+								Befintlig användare
+							</h2>
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
+
+					<div class="row">
+						<div class="col-4">Namn:</div>
+						<div class="col-4 right">
+							<select name="existing_user">
+								<option value="-1"></option>
 <?php
 	$connection = dbConnect();
 	try
@@ -185,87 +187,80 @@ else if (!$editMode && $userId == '')
 	}
 	dbDisconnect($connection);
 ?>
-															</select>
-														</td>
-													</tr>
-												</table>
-											</td>
-											<td rowspan="2" width="50%" valign="bottom" align="right">
-												<a href="javascript:submitForm()">Skicka</a>
-											</td>
-										</tr>
-									</table>
+							</select>
+						</div>
+						<div class="col-3 empty"></div>
+						<div class="col-1 right" style="margin-top: 10px;">
+							<a href="javascript:submitForm()">Skicka</a>
+						</div>
+					</div>
 <?php
 }
 else if (!$editMode)
 {
 ?>
-									Ett mail med vidare instruktioner har skickats till <?php echo $email; ?>.
-									Vänligen kolla din mail.
-									<br><br>
-									<br><br>
-									<br><br>
+					<p>
+						Ett mail med vidare instruktioner har skickats till <?php echo $email; ?>.
+						Vänligen kolla din mail.
+					</p>
+					<br><br>
+					<br><br>
+					<br><br>
 <?php
 }
 else if ($editModeAuthorized)
 {
 ?>
-									Kontrollera först att det är ditt namn som står angivet nedan.
-									Ange därefter ett nytt lösenord och klicka på länken för att spara.
-									<br><br>
-									<table width="100%">
-										<tr>
-											<td width="50%">
-												<h2>
-													Ändra lösenord
-												</h2>
-												<table width="100%">
-													<tr>
-														<td>
-															Namn:
-														</td>
-														<td align="right">
-															<input name="user_name" type="text" style="width: 150px" value="<?php echo $userName; ?>" disabled>
-															<input name="user" type="hidden" value="<?php echo $userId; ?>">
-														</td>
-													</tr>
-													<tr>
-														<td>
-															Nytt&nbsp;lösenord:
-														</td>
-														<td align="right">
-															<input name="password" type="password" style="width: 150px" onKeyPress="return checkEnter(event);">
-														</td>
-													</tr>
-												</table>
-											</td>
-											<td rowspan="2" width="50%" valign="bottom" align="right">
-												<a href="javascript:submitForm()">Spara</a>
-											</td>
-										</tr>
-									</table>
+					<p>
+						Kontrollera först att det är ditt namn som står angivet nedan.
+						Ange därefter ett nytt lösenord och klicka på länken för att spara.
+					</p>
+
+					<div class="row">
+						<div class="col-8">
+							<h2>
+								Ändra lösenord
+							</h2>
+							</div>
+						<div class="col-4 empty"></div>
+					</div>
+
+					<div class="row">
+						<div class="col-4">Namn:</div>
+						<div class="col-4 right">
+							<input name="user_name" type="text" value="<?php echo $userName; ?>" disabled>
+							<input name="user" type="hidden" value="<?php echo $userId; ?>">
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
+
+					<div class="row">
+						<div class="col-4">Nytt&nbsp;lösenord:</div>
+						<div class="col-4 right">
+							<input name="password" type="password" onKeyPress="return checkEnter(event);">
+						</div>
+						<div class="col-3 empty"></div>
+						<div class="col-1 right" style="margin-top: 10px;">
+							<a href="javascript:submitForm()">Spara</a>
+						</div>
+					</div>
 <?php
 }
 else
 {
 ?>
-									Länken du klickade på för att komma hit är ogiltig eller för gammal.
-									Vänligen klicka <a href="/">här</a> för att återgå till inloggningssidan.
-									<br><br>
-									<br><br>
-									<br><br>
+					<p>
+						Länken du klickade på för att komma hit är ogiltig eller för gammal.
+						Vänligen klicka <a href="/">här</a> för att återgå till inloggningssidan.
+					</p>
+					<br><br>
+					<br><br>
+					<br><br>
 <?php
 }
 ?>
-								</form>
-
-								<br>
-								<br>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+				</div>
+			</div>
+		</form>
 	</body>
 </html>
