@@ -7,6 +7,7 @@ define('SALT_LENGTH', 16);
 define('ENCRYPTION_CIPHER', 'aes-128-ctr');
 define('ENCRYPTION_KEY', 'my-wish-is-your-wish');
 
+date_default_timezone_set('Europe/Stockholm');
 
 // ***************************************************************
 // ******** FUNCTIONS ********************************************
@@ -24,7 +25,11 @@ function dbConnect()
 	}
 	try
 	{
-		$connectionFileContent = file_get_contents(__DIR__ . "/../../$connectionFile");
+		$connectionFilePath = __DIR__ . "/../../$connectionFile";
+		$connectionFilePath = file_exists($connectionFilePath)
+			? $connectionFilePath : __DIR__ . "/../../../$connectionFile";
+			
+		$connectionFileContent = file_get_contents($connectionFilePath);
 		$connectionInfo = json_decode($connectionFileContent);
 	}
 	catch (Exception $ex)

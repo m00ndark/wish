@@ -1,21 +1,43 @@
 
+function showDialog(url)
+{
+	displayOverlay("overlay", "loader");
+	if (openAjaxPage(url, "dialog"))
+	{
+		document.getElementById("overlay").style.display = "block";
+		document.getElementById("loader").style.display = "block";
+	}
+}
+
+function closeDialog()
+{
+	document.getElementById("loader").style.display = "none";
+	document.getElementById("dialog").style.display = "none";
+	document.getElementById("overlay").style.display = "none";
+}
+
+
 // --- LOAD AJAX PAGE ----------------------------------------------
 
 
 var avoidPageCaching = 1; // avoid page caching after initial request? (1=yes, 0=no)
 
-function loadPage(pageRequest, containerId)
+function loadPage(pageRequest, containerId, focusId)
 {
 	if (pageRequest.readyState == 4 /* 4=DONE */ && (pageRequest.status == 200 || window.location.href.indexOf("http") == -1))
 	{
 		document.getElementById(containerId).innerHTML = pageRequest.responseText;
 		doCustomDialogAction();
 		document.getElementById(containerId).style.display = "block";
-		document.getElementById("focus").focus();
+		if (focusId && document.getElementById(focusId))
+		{
+			document.getElementById(focusId).focus();
+		}
+		positionDialog(containerId);
 	}
 }
 
-function openAjaxPage(url, containerId)
+function openAjaxPage(url, containerId, focusId)
 {
 	var pageRequest = false;
 	if (window.XMLHttpRequest) // if Mozilla, Safari, IE7 etc
@@ -46,7 +68,7 @@ function openAjaxPage(url, containerId)
 	}
 	pageRequest.onreadystatechange = function()
 	{
-		loadPage(pageRequest, containerId);
+		loadPage(pageRequest, containerId, focusId);
 	}
 	avoidCachingParameter = (avoidPageCaching ? (url.indexOf("?") != -1 ? "&" : "?") + new Date().getTime() : "");
 	pageRequest.open("GET", url + avoidCachingParameter, true);
@@ -59,14 +81,13 @@ function openAjaxPage(url, containerId)
 // --- DIALOG SIZE AND CUSTOM ACTION -------------------------------
 
 
-function setDialogSize(overlayId, loaderId, dialogId)
+function displayOverlay(overlayId, loaderId)
 {
 	var arrayPageSize = getPageSize();
 	var arrayPageScroll = getPageScroll();
 
 	var overlay = document.getElementById(overlayId);
 	var loader = document.getElementById(loaderId);
-	var dialog = document.getElementById(dialogId);
 
 	overlay.style.height = arrayPageSize[1] + "px";
 	// -- ( top coords relative to page ) --
@@ -76,14 +97,37 @@ function setDialogSize(overlayId, loaderId, dialogId)
 	// 44: height of dialog margin and border
 	// pageSize / 7: offset upwards - an appropriate amount to adjust the dialog from the middle and up
 	loader.style.top = (arrayPageScroll[1] + (arrayPageSize[3] - loader.height - (arrayPageSize[3] / 7)) / 2) + "px";
-	dialog.style.top = (arrayPageScroll[1] + (arrayPageSize[3] - 90 - 44 - (arrayPageSize[3] / 7)) / 2) + "px";
 	// -- ( left coords relative to page ) --
 	// pageSize: width of page
 	// 520: width of dialog content
 	// 44: width of dialog margin and border
 	// 17: width of scrollbars
 	loader.style.left = ((arrayPageSize[0] - loader.width - 17) / 2) + "px";
-	dialog.style.left = ((arrayPageSize[0] - 520 - 44 - 17) / 2) + "px";
+}
+
+function positionDialog(dialogId)
+{
+	var arrayPageSize = getPageSize();
+	var arrayPageScroll = getPageScroll();
+
+	var dialog = document.getElementById(dialogId);
+
+	// -- ( top coords relative to page ) --
+	// pageScroll: compensation for scrolled page - i.e. dialog should be placed relative to window, not to page
+	// pageSize: height of window
+	// 90: height of dialog content
+	// 44: height of dialog margin and border
+	// pageSize / 7: offset upwards - an appropriate amount to adjust the dialog from the middle and up
+	dialog.style.top = (arrayPageScroll[1] + (arrayPageSize[3] - 90 - 44 - (arrayPageSize[3] / 7)) / 2) + "px";
+	// -- ( left coords relative to page ) --
+	// pageSize: width of page
+	// 520: width of dialog content
+	// 44: width of dialog margin and border
+	// 17: width of scrollbars
+	var bodyMarginLeft = parseInt(window.getComputedStyle(document.body).getPropertyValue('margin-left'));
+	var bodyMarginRight = parseInt(window.getComputedStyle(document.body).getPropertyValue('margin-right'));
+	var bodyWidth = document.body.offsetWidth + bodyMarginLeft + bodyMarginRight;
+	dialog.style.left = ((bodyWidth - dialog.offsetWidth) / 2) + "px";
 }
 
 function doCustomDialogAction()

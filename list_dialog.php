@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 session_start();
 
@@ -46,10 +49,9 @@ if ($actionIsEdit)
 <form name="list_dialog" method="post" action="home.php">
 	<input name="action" type="hidden" value="<?php echo $action; ?>">
 	<input name="wishlist_id" type="hidden" value="<?php if ($actionIsEdit || $actionIsLock) { echo $listId; } ?>">
-	<table width="520" height="100">
-			<tr>
-				<td colspan="2">
-					<h2 style="margin: 0px;">
+	<div class="row">
+		<div class="col-12">
+			<h2 style="margin-top: 0px;">
 <?php
 if ($actionIsEdit)
 {
@@ -64,57 +66,45 @@ else
 	echo 'Ny önskelista';
 }
 ?>
-					</h2>
-				</td>
-			</tr>
-			<tr>
-				<td valign="bottom">
-					<table width="100%">
-						<tr>
+			</h2>
+		</div>
+	</div>
+
 <?php
 if ($actionIsLock)
 {
 ?>
-							<td>
-							</td>
-							<td class="small">
-								ÅÅÅÅ-MM-DD
-							</td>
-						</tr>
-						<tr>
-							<td width="50">
-								Lås&nbsp;t.o.m:&nbsp;
-							</td>
-							<td width="300">
-								<input name="lock_date" type="text" style="width: 100px">
-								<img title="&#214;ppna Kalender" class="tcalIcon" onclick="A_TCALS['calendar'].f_toggle()" id="tcalico_calendar" src="images/calendar/cal.gif">
-							</td>
+	<div class="auto-row">
+		<div class="input-label">
+			Till&nbsp;och&nbsp;med:
+		</div>
+		<div>
+			<span class="small">ÅÅÅÅ-MM-DD</span>
+			<br>
+			<input name="lock_date" type="text" style="width: 10rem;">
+		</div>
+		<div>
+			<img title="&#214;ppna Kalender" class="tcalIcon" style="width: 1.25rem; margin: 0.125rem" onclick="A_TCALS['calendar'].f_toggle()" id="tcalico_calendar" src="images/calendar/cal.gif">
+		</div>
+	</div>
 <?php
 }
 else
 {
 ?>
-							<td>
-							</td>
-							<td class="small">
-								Använd inte ditt eller ditt barns namn i listans titel.
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Titel:&nbsp;
-							</td>
-							<td>
-								<input name="title" id="focus" type="text" value="<?php if ($actionIsEdit) { echo $title; } ?>" style="width: 300px">
-							</td>
-						</tr>
-						<tr>
-							<td height="5">
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" valign="top">
-								<input name="share" type="checkbox" onclick="enableShareList();"
+	<div class="auto-row">
+		<div class="input-label">
+			Titel:
+		</div>
+		<div class="auto-col">
+			<span class="small">Använd inte ditt eller ditt barns namn i listans titel.</span>
+			<br>
+			<input name="title" id="focus" type="text" value="<?php if ($actionIsEdit) { echo $title; } ?>">
+		</div>
+	</div>
+	<div class="auto-row">
+		<div>
+			<input name="share" id="is_shared" type="checkbox" onclick="enableShareList();"
 <?php
 if ($sharedWithUserId > -1)
 {
@@ -125,9 +115,14 @@ if ($actionIsEdit && $userId != $_SESSION['user_id'])
 	echo ' disabled';
 }
 ?>
->&nbsp;Gemensam&nbsp;lista&nbsp;med:&nbsp;
-								<select name="shared_with_user_id" style="width: 150px"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION['user_id']) { echo ' disabled'; } ?>>
-									<option value="-1"></option>
+>
+		</div>
+		<div class="input-label">
+			<label for="is_shared">Gemensam&nbsp;lista&nbsp;med:</label>
+		</div>
+		<div class="auto-col">
+			<select name="shared_with_user_id"<?php if ($sharedWithUserId == null || $sharedWithUserId < 0 || $actionIsEdit && $userId != $_SESSION['user_id']) { echo ' disabled'; } ?>>
+				<option value="-1"></option>
 <?php
 $connection = dbConnect();
 try
@@ -150,55 +145,51 @@ catch (PDOException $ex)
 }
 dbDisconnect($connection);
 ?>
-								</select>
-							</td>
-						</tr>
-
-
-						<tr>
-							<td height="5">
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" valign="top">
-								<input name="child_list" type="checkbox" onclick="enableChildList();"
+			</select>
+		</div>
+	</div>
+	<div class="auto-row">
+		<div>
+			<input name="child_list" id="is_child" type="checkbox" onclick="enableChildList();"
 <?php
 if ($isChildList == 1)
 {
 	echo ' checked';
 }
 ?>
->&nbsp;Barnönskelista&nbsp;tillhörande:&nbsp;
-								<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>" style="width: 150px"<?php if ($isChildList == 0) { echo ' disabled'; } ?>>
-							</td>
+>
+		</div>
+		<div class="input-label">
+			<label for="is_child">Barnlista&nbsp;tillhörande:</label>
+		</div>
+		<div class="auto-col">
+			<input name="child_name" type="text" value="<?php if ($actionIsEdit) { echo $childName; } ?>"<?php if ($isChildList == 0) { echo ' disabled'; } ?>>
+		</div>
+	</div>
 <?php
 }
 ?>
-						</tr>
-
-
-
-
-					</table>
-				</td>
-				<td valign="bottom" align="right">
-					<a href="javascript:submitDialog()">
+	<div class="row-footer" style="padding-bottom: 0px;">
+		<div class="auto-col">
+			<a href="javascript:submitDialog()">
 <?php
 if ($actionIsEdit)
 {
-	echo 'Ändra</a>';
+	echo 'Ändra';
 }
 elseif ($actionIsLock)
 {
-	echo 'Lås</a>';
+	echo 'Lås';
 }
 else
 {
-	echo 'Lägg&nbsp;till</a>';
+	echo 'Lägg&nbsp;till';
 }
 ?>
-&nbsp;|&nbsp;<a href="javascript:cancelDialog()">Avbryt</a>
-				</td>
-			</tr>
-	</table>
+			</a>
+		</div>
+		<div class="auto-col right">
+			<a href="javascript:cancelDialog()">Avbryt</a>
+		</div>
+	</div>
 </form>

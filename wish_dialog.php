@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 session_start();
 
@@ -89,10 +92,9 @@ elseif ($actionIsAdd)
 	<input name="action" type="hidden" value="<?php echo $action; ?>">
 	<input name="wishlist_id" type="hidden" value="<?php echo $listId; ?>">
 	<input name="wish_id" type="hidden" value="<?php if ($actionIsReserve || $actionIsEdit) { echo $wishId; } ?>">
-	<table width="520" height="110" border="0">
-			<tr>
-				<td colspan="2">
-					<h2 style="margin: 0px;">
+	<div class="row">
+		<div class="col-12">
+			<h2 style="margin-top: 0px;">
 <?php
 if ($actionIsReserve)
 {
@@ -107,27 +109,23 @@ else
 	echo 'Ny önskan';
 }
 ?>
-					</h2>
-				</td>
-			</tr>
-			<tr>
+			</h2>
+		</div>
+	</div>
+
 <?php
 if ($actionIsReserve)
 {
 ?>
-				<td colspan="2" valign="bottom">
-					<i><?php echo $description; ?></i>
-				</td>
-			</tr>
-			<tr>
-				<td valign="bottom">
-					<table width="100%">
-						<tr>
-							<td width="50">
-								Antal:&nbsp;
-							</td>
-							<td>
-								<select name="count" style="width: 40px">
+	<div class="auto-row">
+		<i><?php echo $description; ?></i>
+	</div>
+	<div class="auto-row">
+		<div class="input-label">
+			Antal:
+		</div>
+		<div class="auto-col">
+			<select name="count" style="width: 4rem;">
 <?php
 	if ($maxReservationCount == -1)
 	{
@@ -141,22 +139,21 @@ if ($actionIsReserve)
 		}
 	}
 ?>
-								</select>
-							</td>
-						</tr>
+			</select>
+		</div>
+	</div>
 <?php
 } // $actionIsReserve
 else
 {
 ?>
-				<td valign="bottom">
-					<table>
-						<tr>
-							<td>
-								Kategori:&nbsp;
-							</td>
-							<td>
-								<select name="category" style="width: 150px">
+	<div class="row no-padding">
+		<div class="col-12 grid">
+			<div class="cell-category input-label">
+				Kategori:
+			</div>
+			<div class="cell-category-value">
+				<select name="category">
 <?php
 	if (!$actionIsEdit)
 	{
@@ -182,15 +179,14 @@ else
 	}
 	dbDisconnect($connection);
 ?>
-								</select>
-							</td>
-							<td>
-							</td>
-							<td align="right">
-								Antal:&nbsp;
-							</td>
-							<td align="right">
-								<select name="count" style="width: 40px">
+				</select>
+			</div>
+			<div class="cell-space"></div>
+			<div class="cell-count input-label">
+				Antal:
+			</div>
+			<div class="cell-count-value">
+				<select name="count">
 <?php
 	echo '<option value="-1"' . ($actionIsEdit && $maxReservationCount == -1 ? ' selected="true"' : '') . ">*</option>\n";
 	for ($i = 1; $i <= 15; $i++)
@@ -203,37 +199,46 @@ else
 		echo '>' . $i . "</option>\n";
 	}
 ?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Beskrivning:&nbsp;
-							</td>
-							<td colspan="4">
-								<input name="description" id="focus" type="text" value="<?php if ($actionIsEdit) { echo wash($description); } ?>" style="width: 300px">
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Länk:&nbsp;
-							</td>
-							<td colspan="4">
-								<input name="link" type="text" value="<?php if ($actionIsEdit) { echo wash($link); } ?>" style="width: 300px">
-							</td>
-						</tr>
+				</select>
+			</div>
+			<div class="cell-description input-label">
+				Beskrivning:
+			</div>
+			<div class="cell-description-value-5">
+				<input name="description" id="focus" type="text" value="<?php if ($actionIsEdit) { echo wash($description); } ?>">
+			</div>
+			<div class="cell-link input-label">
+				Länk:
+			</div>
+			<div class="cell-link-value-5">
+				<input name="link" type="text" value="<?php if ($actionIsEdit) { echo wash($link); } ?>">
+			</div>
+		</div>
+	</div>
 <?php
 } // !$actionIsReserve
 ?>
-					</table>
-				</td>
-				<td valign="bottom" align="right">
+	<div class="row-footer" style="padding-bottom: 0px;">
+		<div class="auto-col">
+			<a href="javascript:submitDialog()">
 <?php
-echo '<a href="javascript:submitDialog()">'
-	. ($actionIsReserve ? 'Reservera' : ($actionIsEdit ? 'Ändra' : 'Lägg&nbsp;till'))
-	. "</a>&nbsp;|&nbsp;<a href=\"javascript:cancelDialog()\">Avbryt</a>\n";
+if ($actionIsReserve)
+{
+	echo 'Reservera';
+}
+elseif ($actionIsEdit)
+{
+	echo 'Ändra';
+}
+else
+{
+	echo 'Lägg&nbsp;till';
+}
 ?>
-				</td>
-			</tr>
-	</table>
+			</a>
+		</div>
+		<div class="auto-col right">
+			<a href="javascript:cancelDialog()">Avbryt</a>
+		</div>
+	</div>
 </form>

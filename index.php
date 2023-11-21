@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 // ini_set('display_errors', '1');
 
@@ -30,7 +33,10 @@ include_once 'common.php';
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="styles/main.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="theme-color" content="#2F2F2F"/>
+		<link rel="icon" type="image/png" href="images/favicon.png?timestamp=<?php echo time()?>">
+		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<?php echo time()?>"/>
 		<script language="javascript">
 			function clearExistingUser()
 			{
@@ -105,53 +111,47 @@ include_once 'common.php';
 		</script>
 		<title>Familjens Önskelista</title>
 	</head>
-	<body<?php if (!$loginSuccess) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
-		<table class="main">
-			<tr>
-				<td class="header_back">
-					<table>
-						<tr>
-							<td class="header"></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td class="back">
-					<table>
-						<tr>
-							<td class="content">
-								<h1>
-									Välkommen till Familjens Önskelista!
-								</h1>
-								<br>
-								Har du varit här tidigare, välj ditt namn i listan.
-								Är det första gången du är här, ange då ditt namn i textfältet.
-								Ange även lösenord och klicka därefter på länken för att gå vidare.
-								<br><br>
-								Om ditt namn finns med i listan men du har glömt ditt lösenord, klicka då <a href="pwd.php">här</a> för att skapa ett nytt.
-								<br>
+	<body <?php if (!$loginSuccess) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
+		<form name="login" method="post" action="index.php">
+			<input name="action" type="hidden" value="">
+			<input name="existing_user_name" type="hidden" value="">
+			<input name="next_page" type="hidden" value="<?php echo (isset($_GET['page']) ? urldecode($_GET['page']) : 'home.php'); ?>">
+			<input name="next_page_params" type="hidden" value="<?php echo (isset($_GET['page']) && isset($_GET['params']) ? urldecode($_GET['params']) : ''); ?>">
 
-								<form name="login" method="post" action="index.php">
-									<input name="action" type="hidden" value="">
-									<input name="existing_user_name" type="hidden" value="">
-									<input name="next_page" type="hidden" value="<?php echo (isset($_GET['page']) ? urldecode($_GET['page']) : 'home.php'); ?>">
-									<input name="next_page_params" type="hidden" value="<?php echo (isset($_GET['page']) && isset($_GET['params']) ? urldecode($_GET['params']) : ''); ?>">
+			<div class="row-header">
+				<div class="col-center header">
+					Familjens Önskelista
+				</div>
+			</div>
 
-									<table width="100%">
-										<tr>
-											<td width="50%">
-												<h2>
-													Befintlig användare
-												</h2>
-												<table width="100%">
-													<tr>
-														<td>
-															Namn:
-														</td>
-														<td align="right">
-															<select name="existing_user" style="width: 150px" onclick="clearNewUser();">
-																<option value="-1"></option>
+			<div class="row">
+				<div class="col-center content">
+					<h1>
+						Välkommen till Familjens Önskelista!
+					</h1>
+					<p>
+						Har du varit här tidigare, välj ditt namn i listan.
+						Är det första gången du är här, ange då ditt namn i textfältet.
+						Ange även lösenord och klicka därefter på länken för att logga in.
+					</p>
+					<p>
+						Om ditt namn finns med i listan men du har glömt ditt lösenord, klicka då <a href="pwd.php">här</a> för att skapa ett nytt.
+					</p>
+
+					<div class="row">
+						<div class="col-8">
+							<h2>
+								Befintlig användare
+							</h2>
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
+
+					<div class="row">
+						<div class="col-4">Namn:</div>
+						<div class="col-4 right">
+							<select name="existing_user" onclick="clearNewUser();">
+								<option value="-1"></option>
 <?php
 $connection = dbConnect();
 try
@@ -173,64 +173,60 @@ catch (PDOException $ex)
 }
 dbDisconnect($connection);
 ?>
-															</select>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															Lösenord:
-														</td>
-														<td align="right">
-															<input name="existing_user_password" type="password" style="width: 150px" onKeyPress="clearNewUser(); return checkEnter(event);">
-														</td>
-													</tr>
-												</table>
-											</td>
-											<td rowspan="2" width="50%" valign="bottom" align="right">
-												<a href="javascript:login()">Vidare</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<h2>
-													Ny användare
-												</h2>
-												<table width="100%">
-													<tr>
-														<td>
-															Namn:
-														</td>
-														<td align="right">
-															<input name="new_user_name" type="text" style="width: 150px" onKeyPress="clearExistingUser(); return checkEnter(event);">
-														</td>
-													</tr>
-													<tr>
-														<td>
-															Lösenord:
-														</td>
-														<td align="right">
-															<input name="new_user_password" type="password" style="width: 150px" onKeyPress="clearExistingUser(); return checkEnter(event);">
-														</td>
-													</tr>
-												</table>
-											</td>
-										</tr>
-									</table>
-								</form>
+							</select>
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
 
-								<br>
+					<div class="row">
+						<div class="col-4">Lösenord:</div>
+						<div class="col-4 right">
+							<input name="existing_user_password" type="password" enterkeyhint="go" onKeyPress="clearNewUser(); return checkEnter(event);">
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
+
 <?php
 if (!$loginSuccess)
 {
-	echo "<span style=\"color: #FF0000;\">Lösenordet du angav är felaktigt!</span>\n";
+?>
+					<div class="row">
+						<div class="col-12">
+							<span style="color: #FF0000;">Lösenordet du angav är felaktigt!</span>
+						</div>
+					</div>
+<?php
 }
 ?>
-								<br>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+					<div class="row">
+						<div class="col-8">
+							<h2>
+								Ny användare
+							</h2>
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
+
+					<div class="row">
+						<div class="col-4">Namn:</div>
+						<div class="col-4 right">
+							<input name="new_user_name" type="text" onKeyPress="clearExistingUser(); return checkEnter(event);">
+						</div>
+						<div class="col-4 empty"></div>
+					</div>
+
+					<div class="row">
+						<div class="col-4">Lösenord:</div>
+						<div class="col-4 right">
+							<input name="new_user_password" type="password" enterkeyhint="go" onKeyPress="clearExistingUser(); return checkEnter(event);">
+						</div>
+						<div class="col-3 empty"></div>
+						<div class="col-1 right" style="margin-top: 10px;">
+							<a href="javascript:login()">Logga in</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
 	</body>
 </html>

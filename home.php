@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 // ini_set('display_errors', '1');
 
@@ -63,25 +66,14 @@ dbDisconnect($connection);
 
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="styles/main.css">
-		<link rel="stylesheet" type="text/css" href="styles/calendar.css">
-		<script src="scripts/common.js" type="text/javascript"></script>
-		<script src="scripts/calendar.js" type="text/javascript"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="theme-color" content="#2F2F2F"/>
+		<link rel="icon" type="image/png" href="images/favicon.png?timestamp=<?php echo time()?>">
+		<link rel="stylesheet" type="text/css" href="styles/main.css?timestamp=<?php echo time()?>"/>
+		<link rel="stylesheet" type="text/css" href="styles/calendar.css?timestamp=<?php echo time()?>"/>
+		<script src="scripts/common.js?timestamp=<?php echo time()?>" type="text/javascript"></script>
+		<script src="scripts/calendar.js?timestamp=<?php echo time()?>" type="text/javascript"></script>
 		<script language="javascript">
-
-			function highlightRow(row, modifyFirstChild)
-			{
-				row.style.backgroundColor = "#F6F6F6";
-				if (modifyFirstChild)
-				{
-					row.cells[0].style.backgroundColor = "#FFFFFF";
-				}
-			}
-
-			function dehighlightRow(row)
-			{
-				row.style.backgroundColor = "#FFFFFF";
-			}
 
 			function modifyList(actionType, listId)
 			{
@@ -92,12 +84,7 @@ dbDisconnect($connection);
 
 			function lockList(listId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("list_dialog.php?action=lock&listId=" + listId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("list_dialog.php?action=lock&listId=" + listId);
 			}
 
 			function deleteList(listId)
@@ -110,22 +97,12 @@ dbDisconnect($connection);
 
 			function editList(listId)
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("list_dialog.php?action=edit&listId=" + listId, "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("list_dialog.php?action=edit&listId=" + listId);
 			}
 
 			function addList()
 			{
-				setDialogSize("overlay", "loader", "dialog");
-				if (openAjaxPage("list_dialog.php?action=add", "dialog"))
-				{
-					document.getElementById("overlay").style.display = "block";
-					document.getElementById("loader").style.display = "block";
-				}
+				showDialog("list_dialog.php?action=add")
 			}
 
 			function enableShareList()
@@ -220,9 +197,7 @@ dbDisconnect($connection);
 				{
 					A_TCALS["calendar"].f_hide();
 				}
-				document.getElementById("loader").style.display = "none";
-				document.getElementById("dialog").style.display = "none";
-				document.getElementById("overlay").style.display = "none";
+				closeDialog();
 			}
 
 		</script>
@@ -232,44 +207,41 @@ dbDisconnect($connection);
 		<div id="overlay">
 			<img id="loader" src="images/loader.gif">
 		</div>
-		<div id="dialog" style="display: none;">test</div>
-		<table class="main">
-			<tr>
-				<td class="header_back">
-					<table>
-						<tr>
-							<td class="header"></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td class="back">
-					<table>
-						<tr>
-							<td class="content">
-								<h1>
-									Önskelistor
-								</h1>
-								<br>
-								Välj att titta på någon önskelista eller ändra dina egna listor genom att klicka på länkarna nedan.
-								Klicka på motsvarande länkar om du vill skapa en ny lista eller ta bort en befintlig lista.
-								<br><br>
-								Du kan låsa en lista för att göra den synlig för andra. I en låst lista kan du inte ändra eller ta bort önskningar
-								och inte heller se vad andra har reserverat. Däremot kan du fortfarande lägga till nya önskningar.
-								<br><br>
-								<table width="100%">
-									<form name="modify_list" method="post" action="home.php">
-										<input name="action" type="hidden" value="">
-										<input name="wishlist_id" type="hidden" value="">
-									</form>
-									<tr>
-										<td width="50%" valign="top">
-											<h2>
-												Mina önskelistor
-											</h2>
-											<table width="100%">
-												<tr><td height="9"></td></tr>
+		<div class="dialog" id="dialog"></div>
+
+		<form name="modify_list" method="post" action="home.php">
+			<input name="action" type="hidden" value="">
+			<input name="wishlist_id" type="hidden" value="">
+		</form>
+
+		<div class="row-header">
+			<div class="col-center header">
+				Familjens Önskelista
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-center content">
+				<h1>
+					Önskelistor
+				</h1>
+				<p>
+					Välj att titta på någon önskelista eller ändra dina egna listor genom att klicka på länkarna nedan.
+					Klicka på motsvarande länkar om du vill skapa en ny lista eller ta bort en befintlig lista.
+				</p>
+				<p>
+					Du kan låsa en lista för att göra den synlig för andra. I en låst lista kan du inte ändra eller ta bort önskningar
+					och inte heller se vad andra har reserverat. Däremot kan du fortfarande lägga till nya önskningar.
+				</p>
+
+				<div class="row">
+					<div class="col-12">
+						<h2>
+							Mina önskelistor
+						</h2>
+					</div>
+				</div>
+
 <?php
 $connection = dbConnect();
 try
@@ -288,8 +260,8 @@ try
 		$gotRows = true;
 		$childName = $row->is_child_list == 1 ? $row->child_name : '';
 		$childName = strlen($childName) > 0 && substr($childName, -1) != 's' ? $childName . 's' : $childName;
-		echo "	<tr onMouseOver=\"highlightRow(this, false);\" onMouseOut=\"dehighlightRow(this);\">\n";
-		echo "		<td class=\"list_row_left\">\n";
+		echo "	<div class=\"row-list hover\">\n";
+		echo "		<div class=\"auto-col\">\n";
 		echo '			' . (($userIsSuper) ? '[' . $row->user_name . '] ' : '') . '<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . '</a>';
 		if (strlen($childName) > 0 || $row->shared_with_user_id != null)
 		{
@@ -301,8 +273,8 @@ try
 		{
 			echo "\n";
 		}
-		echo "		</td>\n";
-		echo "		<td class=\"list_row_right\">\n";
+		echo "		</div>\n";
+		echo "		<div class=\"auto-col right\">\n";
 		if ($row->is_locked_for_edit == 0)
 		{
 			echo '			<a href="javascript:lockList(' . $row->wishlist_id . ')">Lås</a>&nbsp;|&nbsp;'
@@ -313,17 +285,17 @@ try
 		{
 			echo '			<i>Låst t.o.m. ' . date('Y-m-d', $row->locked_until_timestamp) . "</i>\n";
 		}
-		echo "		</td>\n";
-		echo "	</tr>\n";
+		echo "		</div>\n";
+		echo "	</div>\n";
 	}
 
 	if (!$gotRows)
 	{
-		echo "	<tr>\n";
-		echo "		<td class=\"small\">\n";
+		echo "	<div class=\"row\">\n";
+		echo "		<div class=\"col-12 small\">\n";
 		echo "			(klicka på \"Lägg till\" för att skapa en ny lista)\n";
-		echo "		</td>\n";
-		echo "	</tr>\n";
+		echo "		</div>\n";
+		echo "	</div>\n";
 	}
 }
 catch (PDOException $ex)
@@ -332,17 +304,17 @@ catch (PDOException $ex)
 }
 dbDisconnect($connection);
 ?>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td width="50%" valign="top">
-											<br><br>
-											<h2>
-												Andras önskelistor
-											</h2>
-											<table width="100%">
-												<tr><td height="9"></td></tr>
+
+				<div class="row">
+					<div class="col-12">
+						<h2>
+							Andras önskelistor
+						</h2>
+					</div>
+				</div>
+
+				<div class="row">
+
 <?php
 $connection = dbConnect();
 try
@@ -368,35 +340,31 @@ try
 		{
 			if ($last_user_name != '')
 			{
-				echo "	<tr>\n";
-				echo "		<td height=\"20\"></td>\n";
-				echo "	</tr>\n";
+				echo "			</div>\n";
+				echo "		</div>\n";
 			}
-			echo "	<tr>\n";
-			echo "		<td class=\"list_header\" colspan=\"3\">\n";
-			echo '			<h3>' . $row->user_name . "</h3>\n";
-			echo "		</td>\n";
-			echo "	</tr>\n";
+			echo "		<div class=\"col-6\">\n";
+			echo "			<div class=\"bubble hover\">\n";
+			echo '				<h3>' . $row->user_name . "</h3>\n";
 			$last_user_name = $row->user_name;
 		}
-		echo "	<tr onMouseOver=\"highlightRow(this, true);\" onMouseOut=\"dehighlightRow(this);\">\n";
-		echo "		<td width=\"5\">&nbsp;&nbsp;</td>\n";
-		echo "		<td width=\"100%\" class=\"list_row_left\">\n";
-		echo '			<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . "</a>\n";
-		echo "		</td>\n";
-		echo "		<td class=\"list_row_right\">\n";
-		// right stuff here
-		echo "		</td>\n";
-		echo "	</tr>\n";
+		else
+		{
+			echo "				<br>\n";
+		}
+		echo '				<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . "</a>\n";
 	}
 
-	if ($last_user_name == '')
+	if ($last_user_name != '')
 	{
-		echo "	<tr>\n";
-		echo "		<td class=\"small\">\n";
+		echo "			</div>\n";
+		echo "		</div>\n";
+	}
+	else
+	{
+		echo "		<div class=\"col-12 small\">\n";
 		echo "			(det finns för närvarande inga låsta listor)\n";
 		echo "		</td>\n";
-		echo "	</tr>\n";
 	}
 }
 catch (PDOException $ex)
@@ -405,21 +373,18 @@ catch (PDOException $ex)
 }
 dbDisconnect($connection);
 ?>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<br><br><br>
-								<table width="100%">
-									<tr>
-										<td>
-											<a href="home.php?action=logout">Logga ut</a>
-										</td>
-										<td align="right">
-											<a href="javascript:addList()">Lägg&nbsp;till</a>
-										</td>
-									</tr>
-								</table>
+
+				</div>
+
+				<div class="row-footer">
+					<div class="auto-col">
+						<a href="home.php?action=logout">Logga ut</a>
+					</div>
+					<div class="auto-col right">
+						<a href="javascript:addList()">Lägg&nbsp;till</a>
+					</div>
+				</div>
+
 <?php
 /*
 	foreach ($_SESSION as $key => $value)
@@ -428,11 +393,8 @@ dbDisconnect($connection);
 	}
 */
 ?>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+
+			</div>
+		</div>
 	</body>
 </html>
