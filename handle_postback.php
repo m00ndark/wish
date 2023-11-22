@@ -112,6 +112,7 @@ if ($postbackPage == 'index.php')
 		$_SESSION['user_id'] = $sessionUserId;
 		$_SESSION['user_fullname'] = $sessionUserName;
 		$_SESSION['user_is_super'] = $sessionUserIsSuper;
+		setcookie('user_id', $sessionUserId, time() + 60 * 60 * 24 * 365);
 	}
 	$redirect = $loginSuccess;
 	$newLocation = (isset($_POST['next_page']) ? ($_POST['next_page']

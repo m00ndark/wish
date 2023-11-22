@@ -28,6 +28,8 @@ if (isset($_POST['action']))
 	include 'handle_postback.php';
 }
 
+$preSelectedUserId = isset($_POST['existing_user'])	? $_POST['existing_user'] : $_COOKIE['user_id'];
+
 // include common functions
 include_once 'common.php';
 ?>
@@ -160,7 +162,7 @@ try
 	while ($row = dbFetch($result))
 	{
 		echo '<option value="' . $row->user_id . '"';
-		if (!$loginSuccess && $row->user_id == $_POST['existing_user'])
+		if ($row->user_id == $preSelectedUserId)
 		{
 			echo ' selected="true"';
 		}
