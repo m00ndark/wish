@@ -261,7 +261,7 @@ try
 		$childName = $row->is_child_list == 1 ? $row->child_name : '';
 		$childName = strlen($childName) > 0 && substr($childName, -1) != 's' ? $childName . 's' : $childName;
 		echo "	<div class=\"row-list hover\">\n";
-		echo "		<div class=\"auto-col\">\n";
+		echo "		<div class=\"list-left-col\">\n";
 		echo '			' . (($userIsSuper) ? '[' . $row->user_name . '] ' : '') . '<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . '</a>';
 		if (strlen($childName) > 0 || $row->shared_with_user_id != null)
 		{
@@ -274,7 +274,7 @@ try
 			echo "\n";
 		}
 		echo "		</div>\n";
-		echo "		<div class=\"auto-col right\">\n";
+		echo "		<div class=\"list-right-col\">\n";
 		if ($row->is_locked_for_edit == 0)
 		{
 			echo '			<button type="button" onClick="lockList(' . $row->wishlist_id . ')">Lås</button>&nbsp;'

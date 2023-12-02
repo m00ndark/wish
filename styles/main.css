@@ -73,20 +73,72 @@ body {
 	align-items: flex-start;
 }
 
+/* For mobile phones: */
+.list-left-col {
+	float: left;
+	padding: 0px;
+	align-items: flex-start;
+	flex-grow: 1;
+	width: 100%;
+}
+
+@media only screen and (min-width: 1016px) {
+	.list-left-col {
+		width: unset;
+	}
+}
+
+/* For mobile phones: */
+.list-right-col {
+	float: left;
+	padding: 0px;
+	margin-top: 10px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	flex-grow: 1;
+	width: 100%;
+}
+
+@media only screen and (min-width: 1016px) {
+	.list-right-col {
+		margin-top: 0px;
+		width: unset;
+	}
+}
+
+/* For mobile phones: */
 .wish-left-col {
 	padding: 0px;
 	align-items: flex-start;
 	overflow-wrap: break-word;
 	word-break: break-word;
+	width: 100%;
 }
 
+@media only screen and (min-width: 1016px) {
+	.wish-left-col {
+		width: unset;
+	}
+}
+
+/* For mobile phones: */
 .wish-right-col {
 	float: left;
 	padding: 0px 0px 0px 15px;
+	margin-top: 10px;
 	display: flex;
 	justify-content: flex-end;
 	align-items: baseline;
 	flex-grow: 1;
+	width: 100%;
+}
+
+@media only screen and (min-width: 1016px) {
+	.wish-right-col {
+		margin-top: 0px;
+		width: unset;
+	}
 }
 
 [class*="row"]::after {
@@ -111,7 +163,7 @@ body {
 
 /* For mobile phones: */
 .row-list {
-	display: flex;
+	display: block;
 	border-radius: 10px;
 	padding: 10px;
 	border: 1px solid var(--bubble-frame-color);
@@ -123,7 +175,6 @@ body {
 	/* For desktop: */
 	.row-list {
 		display: flex;
-		border-radius: 10px;
 		padding: 5px 10px 5px 10px;
 		border: 0px;
 		margin: 0px 5px 0px 5px;
@@ -447,6 +498,28 @@ button.primary {
 
 button.primary:hover {
 	background-color: var(--dark-theme-color);
+}
+
+/* For mobile phones: */
+button.top-back {
+	display: inline-block;
+}
+
+@media only screen and (min-width: 1016px) {
+	button.top-back {
+		display: none;
+	}
+}
+
+/* For mobile phones: */
+button.print {
+	display: none;
+}
+
+@media only screen and (min-width: 1016px) {
+	button.print {
+		display: inline-block;
+	}
 }
 
 span.reserved-wish {

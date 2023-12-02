@@ -261,12 +261,14 @@ else
 <?php
 	if (!$printMode)
 	{
-		echo '<p><button type="button" onClick="printList()">Skriv&nbsp;ut</button>';
+		echo "<p>\n";
+		echo "<button type=\"button\" class=\"top-back\" onClick=\"goto('home.php')\">Tillbaka</button>";
+		echo "<button type=\"button\" class=\"print\" onClick=\"printList()\">Skriv&nbsp;ut</button>";
 		if ($myList)
 		{
-			echo "&nbsp;<button type=\"button\" onClick=\"addWish()\">Lägg&nbsp;till</button>";
+			echo "&nbsp;<button type=\"button\" onClick=\"addWish()\">Lägg&nbsp;till</button>\n";
 		}
-		echo "<p>\n";
+		echo "</p>\n";
 	}
 ?>
 					</div>
@@ -418,14 +420,14 @@ else
 				{
 					if ($myList)
 					{
-						echo ($isReserved || $maxReservationCount > 0 ? '&nbsp;|&nbsp;' : '			');
+						echo ($isReserved || $maxReservationCount > 0 ? '&nbsp;&nbsp;' : '			');
 						echo '<button type="button" onClick="editWish(' . $wishes[$row]['wish_id'] . ')">Ändra</button>&nbsp;'
 							. '<button type="button" onClick="deleteWish(' . $wishes[$row]['wish_id'] . ")\">Ta&nbsp;bort</button>\n";
 					}
 				}
 				if ($listIsLocked && (!$myList || $listIsChildList) && $canBeReserved)
 				{
-					echo '&nbsp;<button type="button" onClick="reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</button>\n";
+					echo '&nbsp;&nbsp;<button type="button" onClick="reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</button>\n";
 				}
 			}
 			echo "		</div>\n";
@@ -473,7 +475,7 @@ if (!$unauthorizedCall)
 	}
 	else
 	{
-		echo '<button type="button" onClick="printList()">Skriv&nbsp;ut</button>';
+		echo '<button type="button" class="print" onClick="printList()">Skriv&nbsp;ut</button>';
 		if ($myList)
 		{
 			echo "&nbsp;<button type=\"button\" onClick=\"addWish()\">Lägg&nbsp;till</button>\n";
