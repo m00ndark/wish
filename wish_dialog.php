@@ -219,8 +219,8 @@ else
 } // !$actionIsReserve
 ?>
 	<div class="row-footer" style="padding-bottom: 0px;">
-		<div class="auto-col">
-			<a href="javascript:submitDialog()">
+		<div class="col-12 right">
+			<button type="button" class="primary" onClick="submitDialog()">
 <?php
 if ($actionIsReserve)
 {
@@ -235,10 +235,7 @@ else
 	echo 'Lägg&nbsp;till';
 }
 ?>
-			</a>
-		</div>
-		<div class="auto-col right">
-			<a href="javascript:cancelDialog()">Avbryt</a>
+			</button>&nbsp;<button type="button" onClick="cancelDialog()">Avbryt</button>
 		</div>
 	</div>
 </form>

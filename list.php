@@ -261,10 +261,10 @@ else
 <?php
 	if (!$printMode)
 	{
-		echo '<p><a href="javascript:printList()">Skriv&nbsp;ut</a>';
+		echo '<p><button type="button" onClick="printList()">Skriv&nbsp;ut</button>';
 		if ($myList)
 		{
-			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>";
+			echo "&nbsp;<button type=\"button\" onClick=\"addWish()\">Lägg&nbsp;till</button>";
 		}
 		echo "<p>\n";
 	}
@@ -344,7 +344,7 @@ else
 				echo "		<div class=\"auto-col right\">\n";
 				if (!$printMode && $myList)
 				{
-					echo '			<a href="javascript:addWish(' . $wishes[$row]['category_id'] . ")\">Lägg&nbsp;till</a>\n";
+					echo '			<button type="button" onClick="addWish(' . $wishes[$row]['category_id'] . ")\">Lägg&nbsp;till</button>\n";
 				}
 				echo "		</div>\n";
 				echo "	</div>\n";
@@ -353,7 +353,7 @@ else
 			// show indication for reserved wishes?
 			$reservationCount = count($wishes[$row]['reservations']);
 			$maxReservationCount = $wishes[$row]['max_reservation_count'];
-			$isReserved = ($reservationCount > 0 && (!$myList || $listIsChildList || !$listIsLocked));
+			$isReserved = ($reservationCount > 0 && (!$myList || $listIsChildList || !$listIsLocked || $_SESSION['user_is_super']));
 			$isFullyReserved = ($isReserved && $reservationCount >= $maxReservationCount && $maxReservationCount != -1);
 			$canBeReserved = ($listIsLocked && !$isFullyReserved && ($maxReservationCount > 0
 					|| $maxReservationCount == -1 && array_search($_SESSION['user_id'], $wishes[$row]['reservations']) === false));
@@ -419,14 +419,13 @@ else
 					if ($myList)
 					{
 						echo ($isReserved || $maxReservationCount > 0 ? '&nbsp;|&nbsp;' : '			');
-						echo '<a href="javascript:editWish(' . $wishes[$row]['wish_id'] . ')">Ändra</a>&nbsp;|&nbsp;'
-							. '<a href="javascript:deleteWish(' . $wishes[$row]['wish_id'] . ")\">Ta&nbsp;bort</a>\n";
+						echo '<button type="button" onClick="editWish(' . $wishes[$row]['wish_id'] . ')">Ändra</button>&nbsp;'
+							. '<button type="button" onClick="deleteWish(' . $wishes[$row]['wish_id'] . ")\">Ta&nbsp;bort</button>\n";
 					}
 				}
 				if ($listIsLocked && (!$myList || $listIsChildList) && $canBeReserved)
 				{
-					echo ($maxReservationCount == -1 && $reservationCount == 0 ? '' : '&nbsp;|')
-						. '&nbsp;<a href="javascript:reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</a>\n";
+					echo '&nbsp;<button type="button" onClick="reserveWish(' . $wishes[$row]['wish_id'] . ")\">Reservera</button>\n";
 				}
 			}
 			echo "		</div>\n";
@@ -449,7 +448,7 @@ else
 <?php
 if (!$printMode)
 {
-	echo "<a href=\"home.php\">Tillbaka</a>\n";
+	echo "<button type=\"button\" onClick=\"goto('home.php')\">Tillbaka</button>\n";
 }
 ?>
 					</div>
@@ -474,10 +473,10 @@ if (!$unauthorizedCall)
 	}
 	else
 	{
-		echo '<a href="javascript:printList()">Skriv&nbsp;ut</a>';
+		echo '<button type="button" onClick="printList()">Skriv&nbsp;ut</button>';
 		if ($myList)
 		{
-			echo "&nbsp;|&nbsp;<a href=\"javascript:addWish()\">Lägg&nbsp;till</a>\n";
+			echo "&nbsp;<button type=\"button\" onClick=\"addWish()\">Lägg&nbsp;till</button>\n";
 		}
 	}
 }

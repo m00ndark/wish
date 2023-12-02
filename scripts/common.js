@@ -16,6 +16,11 @@ function closeDialog()
 	document.getElementById("overlay").style.display = "none";
 }
 
+function goto(url)
+{
+	window.location.href = url;
+}
+
 
 // --- LOAD AJAX PAGE ----------------------------------------------
 
