@@ -65,13 +65,13 @@ include_once 'common.php';
 				}
 				if (characterCode == 13)
 				{
-					login();
+					doLogin();
 					return false;
 				}
 				return true;
 			}
 
-			function login()
+			function doLogin()
 			{
 				var existing_user = document.forms["login"].elements["existing_user"];
 				var existing_user_password = document.forms["login"].elements["existing_user_password"];
@@ -113,7 +113,7 @@ include_once 'common.php';
 		</script>
 		<title>Familjens Önskelista</title>
 	</head>
-	<body <?php if (!$loginSuccess) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
+	<body <?php if (!empty($preSelectedUserId)) { echo ' onload="document.forms[\'login\'].elements[\'existing_user_password\'].focus();"'; } ?>>
 		<form name="login" method="post" action="index.php">
 			<input name="action" type="hidden" value="">
 			<input name="existing_user_name" type="hidden" value="">
@@ -217,14 +217,14 @@ if (!$loginSuccess)
 						<div class="col-4 empty"></div>
 					</div>
 
-					<div class="row">
+					<div class="row" style="padding-bottom: 10px;">
 						<div class="col-4">Lösenord:</div>
 						<div class="col-4 right">
 							<input name="new_user_password" type="password" enterkeyhint="go" onKeyPress="clearExistingUser(); return checkEnter(event);">
 						</div>
 						<div class="col-3 empty"></div>
 						<div class="col-1 right" style="margin-top: 10px;">
-							<a href="javascript:login()">Logga in</a>
+							<button type="button" class="primary" onClick="doLogin()">Logga&nbsp;in</button>
 						</div>
 					</div>
 				</div>

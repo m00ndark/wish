@@ -261,7 +261,7 @@ try
 		$childName = $row->is_child_list == 1 ? $row->child_name : '';
 		$childName = strlen($childName) > 0 && substr($childName, -1) != 's' ? $childName . 's' : $childName;
 		echo "	<div class=\"row-list hover\">\n";
-		echo "		<div class=\"auto-col\">\n";
+		echo "		<div class=\"list-left-col\">\n";
 		echo '			' . (($userIsSuper) ? '[' . $row->user_name . '] ' : '') . '<a href="list.php?id=' . $row->wishlist_id . '">' . $row->title . '</a>';
 		if (strlen($childName) > 0 || $row->shared_with_user_id != null)
 		{
@@ -274,12 +274,12 @@ try
 			echo "\n";
 		}
 		echo "		</div>\n";
-		echo "		<div class=\"auto-col right\">\n";
+		echo "		<div class=\"list-right-col\">\n";
 		if ($row->is_locked_for_edit == 0)
 		{
-			echo '			<a href="javascript:lockList(' . $row->wishlist_id . ')">Lås</a>&nbsp;|&nbsp;'
-				. '<a href="javascript:editList(' . $row->wishlist_id . ')">Ändra</a>';
-			echo ($row->user_id == $userId ? '&nbsp;|&nbsp;<a href="javascript:deleteList(' . $row->wishlist_id . ')">Ta bort</a>' : '') . "\n";
+			echo '			<button type="button" onClick="lockList(' . $row->wishlist_id . ')">Lås</button>&nbsp;'
+				. '<button type="button" onClick="editList(' . $row->wishlist_id . ')">Ändra</button>';
+			echo ($row->user_id == $userId ? '&nbsp;<button type="button" onClick="deleteList(' . $row->wishlist_id . ')">Ta bort</button>' : '') . "\n";
 		}
 		else
 		{
@@ -378,10 +378,10 @@ dbDisconnect($connection);
 
 				<div class="row-footer">
 					<div class="auto-col">
-						<a href="home.php?action=logout">Logga ut</a>
+						<button type="button" onClick="goto('home.php?action=logout')">Logga ut</button>
 					</div>
 					<div class="auto-col right">
-						<a href="javascript:addList()">Lägg&nbsp;till</a>
+						<button type="button" onClick="addList()">Lägg&nbsp;till</button>
 					</div>
 				</div>
 

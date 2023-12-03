@@ -18,14 +18,17 @@
 :root {
 	--theme-color: #CC0E00;
 	--light-theme-color: #F2C2BF;
+	--dark-theme-color: #940A00;
 	--text-color: #666666;
 	--light-text-color: #BBBBBB;
 	--bubble-frame-color: #BBBBBB;
 	--hover-back-color: #F6F6F6;
+	--dark-hover-back-color: #EBEBEB;
 }
 
 html {
 	font-family: "WF Visual Sans Text", sans-serif;
+	font-size: 1rem;
 }
 
 body {
@@ -70,20 +73,72 @@ body {
 	align-items: flex-start;
 }
 
+/* For mobile phones: */
+.list-left-col {
+	float: left;
+	padding: 0px;
+	align-items: flex-start;
+	flex-grow: 1;
+	width: 100%;
+}
+
+@media only screen and (min-width: 1016px) {
+	.list-left-col {
+		width: unset;
+	}
+}
+
+/* For mobile phones: */
+.list-right-col {
+	float: left;
+	padding: 0px;
+	margin-top: 10px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	flex-grow: 1;
+	width: 100%;
+}
+
+@media only screen and (min-width: 1016px) {
+	.list-right-col {
+		margin-top: 0px;
+		width: unset;
+	}
+}
+
+/* For mobile phones: */
 .wish-left-col {
 	padding: 0px;
 	align-items: flex-start;
 	overflow-wrap: break-word;
 	word-break: break-word;
+	width: 100%;
 }
 
+@media only screen and (min-width: 1016px) {
+	.wish-left-col {
+		width: unset;
+	}
+}
+
+/* For mobile phones: */
 .wish-right-col {
 	float: left;
 	padding: 0px 0px 0px 15px;
+	margin-top: 10px;
 	display: flex;
 	justify-content: flex-end;
-	align-items: flex-start;
+	align-items: baseline;
 	flex-grow: 1;
+	width: 100%;
+}
+
+@media only screen and (min-width: 1016px) {
+	.wish-right-col {
+		margin-top: 0px;
+		width: unset;
+	}
 }
 
 [class*="row"]::after {
@@ -103,22 +158,23 @@ body {
 	border: 1px solid var(--bubble-frame-color);
 	background: var(--hover-back-color);
 	margin: 20px 5px 5px 5px;
+	align-items: baseline;
 }
 
 /* For mobile phones: */
 .row-list {
-	display: flex;
+	display: block;
 	border-radius: 10px;
 	padding: 10px;
 	border: 1px solid var(--bubble-frame-color);
 	margin: 5px;
+	align-items: baseline;
 }
 
 @media only screen and (min-width: 1016px) {
 	/* For desktop: */
 	.row-list {
 		display: flex;
-		border-radius: 10px;
 		padding: 5px 10px 5px 10px;
 		border: 0px;
 		margin: 0px 5px 0px 5px;
@@ -310,7 +366,7 @@ h3 {
 }
 
 h4 {
-	font-size: 0.9rem;
+	font-size: 1rem;
 	margin: 0px;
 }
 
@@ -412,6 +468,60 @@ select {
 	font-size: 1rem;
 }
 
+button {
+	background-color: white;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 5px;
+	border-color: var(--text-color);
+	font-family: "WF Visual Sans Text", sans-serif;
+	font-size: 1rem;
+	color: var(--text-color);
+	cursor: pointer;
+	padding: 2px 10px;
+}
+
+button:hover {
+	background-color: var(--dark-hover-back-color);
+}
+
+button.primary {
+	background-color: var(--theme-color);
+	border-width: 0px;
+	border-radius: 5px;
+	font-family: "WF Visual Sans Text", sans-serif;
+	font-size: 1rem;
+	color: white;
+	cursor: pointer;
+	padding: 2px 10px;
+}
+
+button.primary:hover {
+	background-color: var(--dark-theme-color);
+}
+
+/* For mobile phones: */
+button.top-back {
+	display: inline-block;
+}
+
+@media only screen and (min-width: 1016px) {
+	button.top-back {
+		display: none;
+	}
+}
+
+/* For mobile phones: */
+button.print {
+	display: none;
+}
+
+@media only screen and (min-width: 1016px) {
+	button.print {
+		display: inline-block;
+	}
+}
+
 span.reserved-wish {
 	text-decoration: line-through;
 	color: var(--light-text-color);
@@ -428,7 +538,7 @@ span.print-date {
 
 span.tooltip-link {
 	color: #CC6C66;
-	cursor: pointer;
+	cursor: default;
 	border-bottom: 1px dotted #CC6C66;
 }
 

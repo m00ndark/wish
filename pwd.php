@@ -21,6 +21,7 @@ include_once 'common.php';
 $pwdSavedSuccessfully = false;
 $editMode = false;
 $userId = '';
+$preSelectedUserId = $_COOKIE['user_id'];
 if (isset($_GET['success']))
 {
 	$pwdSavedSuccessfully = true;
@@ -161,7 +162,7 @@ else if (!$editMode && $userId == '')
 						<div class="col-4 empty"></div>
 					</div>
 
-					<div class="row">
+					<div class="row" style="padding-bottom: 10px;">
 						<div class="col-4">Namn:</div>
 						<div class="col-4 right">
 							<select name="existing_user">
@@ -174,7 +175,7 @@ else if (!$editMode && $userId == '')
 		while ($row = dbFetch($result))
 		{
 			echo '<option value="' . $row->user_id . '"';
-			if ($row->user_id == $userId)
+			if ($row->user_id == $preSelectedUserId)
 			{
 				echo ' selected="true"';
 			}
@@ -191,7 +192,7 @@ else if (!$editMode && $userId == '')
 						</div>
 						<div class="col-3 empty"></div>
 						<div class="col-1 right" style="margin-top: 10px;">
-							<a href="javascript:submitForm()">Skicka</a>
+							<button type="button" class="primary" onClick="submitForm()">Skicka</button>
 						</div>
 					</div>
 <?php
@@ -234,14 +235,14 @@ else if ($editModeAuthorized)
 						<div class="col-4 empty"></div>
 					</div>
 
-					<div class="row">
+					<div class="row" style="padding-bottom: 10px;">
 						<div class="col-4">Nytt&nbsp;lösenord:</div>
 						<div class="col-4 right">
 							<input name="password" type="password" onKeyPress="return checkEnter(event);">
 						</div>
 						<div class="col-3 empty"></div>
 						<div class="col-1 right" style="margin-top: 10px;">
-							<a href="javascript:submitForm()">Spara</a>
+							<button type="button" class="primary" onClick="submitForm()">Spara</button>
 						</div>
 					</div>
 <?php
