@@ -359,13 +359,15 @@ else
 			$isFullyReserved = ($isReserved && $reservationCount >= $maxReservationCount && $maxReservationCount != -1);
 			$canBeReserved = ($listIsLocked && !$isFullyReserved && ($maxReservationCount > 0
 					|| $maxReservationCount == -1 && array_search($_SESSION['user_id'], $wishes[$row]['reservations']) === false));
-			$link = (strpos($wishes[$row]['link'], 'http://') === FALSE && strpos($wishes[$row]['link'], 'https://') === FALSE ? 'http://' : '') . $wishes[$row]['link'];
+			$link = $wishes[$row]['link'];
+			$link = (strpos($link, 'http://') === FALSE && strpos($link, 'https://') === FALSE ? 'http://' : '') . $link;
+			$linkText = 'Länk' . (preg_match('{http(?:s|)://(?:[a-z0-9.]*?\.)?([^./]+\.[^./]+)(?:/|$)}', $link, $matches) ? ' till <b>' . $matches[1] . '</b>' : '');
 			echo "	<div class=\"row-list hover\">\n";
 			echo "		<div class=\"wish-left-col\">\n";
 			echo '			' . ($isFullyReserved ? '<span class="reserved-wish">' : '') . $wishes[$row]['short_description'];
 			echo ($isFullyReserved ? '</span><span class="reserved-wish-link">' : "");
 			echo ($wishes[$row]['link'] != '' ? "\n			<br><a href=\"" . $link . '" class="' . ($isFullyReserved ? 'reserved-wish' : 'wish') . '" target="wish-link-'
-				. $wishes[$row]['wish_id'] . '">' . $link . '</a>' : '');
+				. $wishes[$row]['wish_id'] . '">' . $linkText . '</a>' : '');
 			echo ($isFullyReserved ? '</span>' : '') . "\n";
 			echo "		</div>\n";
 			echo "		<div class=\"wish-right-col\">\n";
