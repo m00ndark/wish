@@ -364,7 +364,7 @@ try
 	{
 		echo "		<div class=\"col-12 small\">\n";
 		echo "			(det finns för närvarande inga låsta listor)\n";
-		echo "		</td>\n";
+		echo "		</div>\n";
 	}
 }
 catch (PDOException $ex)

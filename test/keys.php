@@ -5,9 +5,10 @@ ini_set('display_errors', '1');
 
 session_start();
 
-echo 'User ID : ' . $_SESSION['user_id'] . "<br>\n";
-echo 'Super   : ' . $_SESSION['user_is_super'] . "<br>\n";
-echo 'DIR     : ' . __DIR__ . "<br><br><br>\n";
+echo "<pre>\n";
+echo 'User ID : ' . $_SESSION['user_id'] . "\n";
+echo 'Super   : ' . $_SESSION['user_is_super'] . "\n";
+echo 'DIR     : ' . __DIR__ . "\n\n\n";
 
 // if ()
 
@@ -58,26 +59,30 @@ try
 	// 		[':key' => encrypt($key), ':wishId' => $id]);
 	// }
 
-	echo "-----------------------<br><br>\n";
+	echo "wishes: wish_id > reservation_key\n";
+	echo "-----------------------\n";
 
 	$result = dbExecute($connection, 'SELECT wish_id, reservation_key FROM wishes');
 	while ($row = dbFetch($result))
 	{
-		echo $row->wish_id . ' > ' . decrypt($row->reservation_key) . "<br>\n";
+		echo $row->wish_id . ' > ' . decrypt($row->reservation_key) . "\n";
 	}
 
-	echo "-----------------------<br><br>\n";
+	echo "\nreservations: reservation_id > key (reserved_by_user_id)\n";
+	echo "-----------------------\n";
 
-	$result = dbExecute($connection, 'SELECT reservation_id, `key` FROM reservations');
+	$result = dbExecute($connection, 'SELECT reservation_id, `key`, reserved_by_user_id FROM reservations');
 	while ($row = dbFetch($result))
 	{
-		echo $row->reservation_id . ' > ' . decrypt($row->key) . "<br>\n";
+		echo $row->reservation_id . ' > ' . decrypt($row->key) . ' (' . decrypt($row->reserved_by_user_id) . ')' . "\n";
 	}
 }
 catch (PDOException $ex)
 {
 	die('Could not retrieve reservation information from database: ' . $ex->getMessage());
 }
+
+echo "</pre>\n";
 
 dbDisconnect($connection);
 
